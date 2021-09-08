@@ -8,18 +8,17 @@
 * Includes n = 88,008 subjects and
 * 187 variables:
   * Demographics:
-  * Age at baseline: `agein`
-  * BMI
-  * Education, 3 levels: `edu3cat`
-  * Gender: `female`
-  * Race (Black/Non-Black): `black`
-* Total intake in kcal, gram and servings per day
-* 28 food groups in:
-  * kcal: `*_kcal`
-  * gram: `*_gram`
-  * servings: `*_srv`
-  * GWP (kg CO2-eq): `*_gw_kg`
-  * land use (m²a): `*_lu_m2`
-  * water consumption (m³): `*_wc_m3`
-  * (replace * with food group name – see below)
-  
+    * Age at baseline: `agein`
+    * BMI: `bmi`
+    * Education, 3 levels: `edu3cat`
+    * Gender: `female`
+    * Race (Black/Non-Black): `black`
+  * Total intake in kcal, gram and servings per day
+  * 28 food groups in:
+    * kcal: `*_kcal`
+    * gram: `*_gram`
+    * servings: `*_srv`
+    * GWP (kg CO2-eq): `*_gw_kg`
+    * land use (m²a): `*_lu_m2`
+    * water consumption (m³): `*_wc_m3`
+    * (replace * with food group name – see below)
