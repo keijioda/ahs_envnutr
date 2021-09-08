@@ -5,7 +5,7 @@
 browseURL("http://sph.wiki/keiji/projects:envnutr:start")
 
 # Required packages
-pacs <- c("tidyverse", "readxl", "tableone")
+pacs <- c("tidyverse", "readxl", "tableone", "GGally", "egg")
 sapply(pacs, require, character.only = TRUE)
 
 # Read data ---------------------------------------------------------------
@@ -13,8 +13,10 @@ sapply(pacs, require, character.only = TRUE)
 # Data file
 zipfile <- list.files(path = "./data", pattern = "\\.zip$", full.names = TRUE)
 fname <- unzip(zipfile, list=TRUE)$Name[2]
+# fname <- list.files(path = "./data", pattern = "\\.csv$", full.names = TRUE)
 
 # Read data -- 88,008 obs and 190 variables
+# ev <- read_csv(fname[2]) %>% 
 ev <- read_csv(unz(zipfile, fname)) %>% 
   arrange(analysisid) %>% 
   mutate(edu3cat = factor(edu3cat, levels = c("Highschool", "Some College", "College Degree")),
@@ -64,7 +66,7 @@ ev %>%
   select(min, Q1, median, Q3, max, mean, sd, skew)
 
 # Histogram of total intake in kcal, gram, servings per day
-# pdf("histogram total intake.pdf", width = 9, height = 3)
+# pdf("./output/histogram total intake.pdf", width = 9, height = 3)
 ev %>% 
   select(kcal, gram, srv) %>% 
   pivot_longer(kcal:srv, names_to = "variable", values_to = "value") %>% 
@@ -74,3 +76,137 @@ ev %>%
   facet_wrap(~ variable, scales = "free")
 # dev.off()
 
+ev %>% 
+  select(kcal, gram, srv) %>% 
+  ggpairs(lower = list(continuous = wrap("points", alpha = 0.2)))
+
+# Compare kcal and gram intake
+ev_highlight <- ev %>% filter(gram >= 9500)
+
+# pdf("./output/scatterplot kcal vs gram.pdf", width = 7, height = 5)
+ev %>% 
+  ggplot(aes(x = gram, y = kcal)) + 
+  geom_point(alpha = 0.2, shape = 16, stroke = 0) +
+  geom_point(data = ev_highlight, aes(x = gram, y = kcal), shape = 1, size = 5, color = "red") +
+  labs(x = "Total intake in gram/day", y = "Total intake in kcal/day")
+# dev.off()
+
+# Distribution of total env impact
+ev %>% 
+  select(gw_kg, lu_m2, wc_m3) %>% 
+  # mutate_all(log) %>% 
+  psych::describe(quant=c(.25,.75)) %>% 
+  rename(Q1 = Q0.25, Q3 = Q0.75) %>% 
+  select(min, Q1, median, Q3, max, mean, sd, skew)
+
+# Histogram
+# pdf("./output/histogram total env impact.pdf", width = 9, height = 3)
+ev %>% 
+  select(gw_kg, lu_m2, wc_m3) %>% 
+  pivot_longer(gw_kg:wc_m3, names_to = "variable", values_to = "value") %>% 
+  mutate(variable = factor(variable, levels = c("gw_kg", "lu_m2", "wc_m3"))) %>% 
+  # mutate_if(is.numeric, log) %>% 
+  ggplot(aes(x = value)) +
+  geom_histogram(bins = 50) +
+  facet_wrap(~ variable, scales = "free")
+# dev.off()
+
+# pdf("./output/scatterplot matrix total env impact.pdf", width = 6, height = 6)
+# pdf("./output/scatterplot matrix log total env impact.pdf", width = 6, height = 6)
+ev %>% 
+  select(gw_kg, lu_m2, wc_m3) %>% 
+  # mutate_all(log) %>%
+  ggpairs(lower = list(continuous = wrap("points", alpha = 0.2, shape = 16, stroke = 0)))
+# dev.off()
+
+
+# Food group variables ----------------------------------------------------
+
+# 28 Food groups
+fg_name <- grep("_gram", names(ev), value = TRUE) %>% 
+  gsub("_gram", "", .)
+fg_name
+
+# Create lists of variables
+kcal_vars <- paste0(fg_name, "_kcal")
+gram_vars <- paste0(fg_name, "_gram")
+srv_vars  <- paste0(fg_name, "_srv")
+gwp_vars  <- paste0(fg_name, "_gw_kg")
+lu_vars   <- paste0(fg_name, "_lu_m2")
+wc_vars   <- paste0(fg_name, "_wc_m3")
+
+# Descriptive stats
+all_desc <- function(vars, digits = 2){
+  ev %>% 
+    select(all_of(vars)) %>% 
+    psych::describe(quant=c(.25,.75, .9, .95, .99, .995, .999)) %>% 
+    select(min, Q0.25, median, Q0.75:Q0.999, max, mean, sd, skew) %>%
+    print(digits = digits)
+}
+
+all_desc(kcal_vars, digits = 1)
+all_desc(gram_vars, digits = 1)
+all_desc(srv_vars, digits = 1)
+all_desc(gwp_vars)
+all_desc(lu_vars)
+all_desc(wc_vars)
+
+# Histograms
+all_histogram <- function(vars, ncol = 6, log = FALSE){
+  out <- ev %>% 
+    select(all_of(vars)) %>% 
+    pivot_longer(vars, names_to = "variable", values_to = "value") %>% 
+    mutate(variable = factor(variable, levels = vars)) %>% 
+    ggplot(aes(x = value)) +
+    geom_histogram() +
+    facet_wrap(~variable, scales = "free", ncol = ncol)
+  
+  if(log) out <- out + scale_x_continuous(trans = scales::pseudo_log_trans(base = 2))
+  return(out)
+}
+
+# pdf("./output/histogram food groups.pdf", width = 11, height = 8)
+all_histogram(kcal_vars)
+all_histogram(gram_vars)
+all_histogram(srv_vars)
+all_histogram(gwp_vars)
+all_histogram(lu_vars)
+all_histogram(wc_vars)
+# dev.off()
+
+# Scatter plots between intake and env variable
+compScatter <- function(fg, y, x = "_gram"){
+  x_fg <- sym(paste0(fg, x))
+  y_fg <- sym(paste0(fg, y))
+  ev %>% 
+    ggplot(aes(x = !!x_fg, y = !!y_fg)) + 
+    geom_point(alpha = 0.2) + 
+    geom_smooth(method = "lm", se = TRUE)
+}
+
+gwp_plots <- lapply(fg_name, compScatter, y = "_gw_kg")
+
+# pdf("Scatterplot gram vs gwp.pdf", width = 11, height = 20)
+ggarrange(plots = gwp_plots, ncol = 4)
+# dev.off()
+
+# Mean plots of environmental variables by food groups
+MeanPlot <- function(vars){
+  ev %>% 
+    select(vars) %>% 
+    summarize_all(mean) %>% 
+    pivot_longer(vars, names_to = "Variable", values_to = "Mean") %>% 
+    ggplot(aes(x = reorder(Variable, Mean), y = Mean)) + 
+    geom_bar(stat = "identity") +
+    coord_flip() +
+    labs(x = "Food group")
+}
+
+# pdf("Mean plots env impact.pdf", width = 12, height = 4)
+ggarrange(
+  MeanPlot(gwp_vars),
+  MeanPlot(lu_vars),
+  MeanPlot(wc_vars),
+  ncol = 3
+)
+# dev.off()
