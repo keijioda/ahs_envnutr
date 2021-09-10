@@ -15,10 +15,18 @@
     * Race (Black/Non-Black): `black`
   * Total intake in kcal, gram and servings per day
   * 28 food groups in:
-    * kcal: `*_kcal`
-    * gram: `*_gram`
-    * servings: `*_srv`
+    * kcal/day: `*_kcal`
+    * gram/day: `*_gram`
+    * standard servings/day: `*_srv`
     * GWP (kg CO2-eq): `*_gw_kg`
     * land use (m²a): `*_lu_m2`
     * water consumption (m³): `*_wc_m3`
     * (replace * with food group name – see below)
+
+* There are 28 food groups:
+```
+ [1] "fruit"      "fvjuice"    "veg"        "potato"     "legumes"    "refgrain"   "whlgrain"   "vegmeat"    "nutseed"   
+[10] "sauce"      "vegoil"     "eggs"       "dairy"      "dairysub"   "margarine"  "butter"     "beef"       "procmeat"  
+[19] "poultry"    "pork"       "fish"       "water"      "soda"       "cofftea"    "alcbev"     "dessert"    "snackfoods"
+[28] "cereal"
+```
