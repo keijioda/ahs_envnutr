@@ -25,8 +25,8 @@
 
 * There are 28 food groups:
 ```
- [1] "fruit"      "fvjuice"    "veg"        "potato"     "legumes"    "refgrain"   "whlgrain"   "vegmeat"    "nutseed"   
-[10] "sauce"      "vegoil"     "eggs"       "dairy"      "dairysub"   "margarine"  "butter"     "beef"       "procmeat"  
-[19] "poultry"    "pork"       "fish"       "water"      "soda"       "cofftea"    "alcbev"     "dessert"    "snackfoods"
-[28] "cereal"
+ [1] "fruit"      "fvjuice"    "veg"        "potato"     "legumes"    "refgrain"   "whlgrain"  
+ [8] "vegmeat"    "nutseed"    "sauce"      "vegoil"     "eggs"       "dairy"      "dairysub"  
+[15] "margarine"  "butter"     "beef"       "procmeat"   "poultry"    "pork"       "fish"      
+[22] "water"      "soda"       "cofftea"    "alcbev"     "dessert"    "snackfoods" "cereal"  
 ```
