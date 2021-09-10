@@ -30,3 +30,18 @@
 [15] "margarine"  "butter"     "beef"       "procmeat"   "poultry"    "pork"       "fish"      
 [22] "water"      "soda"       "cofftea"    "alcbev"     "dessert"    "snackfoods" "cereal"  
 ```
+## Demographics
+
+```
+                    level          Overall      
+  n                                88008        
+  agein (mean (SD))                58.32 (14.31)
+  bmi (mean (SD))                  27.11 (5.84) 
+  edu3cat (%)       Highschool     18627 (21.4) 
+                    Some College   34350 (39.5) 
+                    College Degree 33914 (39.0) 
+  female (%)        Male           30921 (35.1) 
+                    Female         57057 (64.9) 
+  black (%)         Non-Black      65354 (74.7) 
+                    Black          22175 (25.3) 
+```
