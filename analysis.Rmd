@@ -1,0 +1,145 @@
+---
+title: '**AHS-2 Environmental Nutrition**'
+output: pdf_document
+header-includes:
+  - \usepackage{titling}
+  - \setlength{\droptitle}{-8em} 
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+# Required packages
+pacs <- c("tidyverse", "readxl", "tableone", "GGally", "egg", "DescTools")
+sapply(pacs, require, character.only = TRUE)
+
+# Read data ---------------------------------------------------------------
+
+# Data file
+zipfile <- list.files(path = "./data", pattern = "\\.zip$", full.names = TRUE)
+fname <- unzip(zipfile, list=TRUE)$Name[2]
+# fname <- list.files(path = "./data", pattern = "\\.csv$", full.names = TRUE)
+
+# Read data -- 88,008 obs and 190 variables
+# ev <- read_csv(fname[2]) %>% 
+ev <- read_csv(unz(zipfile, fname)) %>% 
+  arrange(analysisid) %>% 
+  mutate(edu3cat = factor(edu3cat, levels = c("Highschool", "Some College", "College Degree")),
+         female = factor(female, labels = c("Male", "Female")),
+         black = factor(black, labels = c("Non-Black", "Black")))
+
+# change variable names to lower casse
+names(ev) <- tolower(names(ev))
+
+# Demographics and lifestyle ----------------------------------------------
+
+demo_vars <- c("agein", "bmi", "edu3cat", "female", "black")
+
+# Total intake and environmental impact -----------------------------------
+
+total_vars <- c("kcal", "gram", "srv", "gw_kg", "lu_m2", "wc_m3")
+
+# Food group variables ----------------------------------------------------
+
+# 28 Food groups
+fg_name <- grep("_gram", names(ev), value = TRUE) %>% 
+  gsub("_gram", "", .)
+fg_name
+
+# Create lists of variables
+kcal_vars <- paste0(fg_name, "_kcal")
+gram_vars <- paste0(fg_name, "_gram")
+srv_vars  <- paste0(fg_name, "_srv")
+gwp_vars  <- paste0(fg_name, "_gw_kg")
+lu_vars   <- paste0(fg_name, "_lu_m2")
+wc_vars   <- paste0(fg_name, "_wc_m3")
+
+# Winsorize food group variables at 99.9 percentitle
+# Recalculate total kcal, gram, srv, gwp, lu, and wc
+ev2 <- ev %>% 
+  mutate(across(fruit_kcal:cereal_srv, Winsorize, probs = c(0, 0.999))) %>% 
+  mutate(kcal = rowSums(across(all_of(kcal_vars))),
+         gram = rowSums(across(all_of(gram_vars))),
+         srv  = rowSums(across(all_of(srv_vars))),
+         gw_kg = rowSums(across(all_of(gwp_vars))),
+         lu_m2 = rowSums(across(all_of(lu_vars))),
+         wc_m3 = rowSums(across(all_of(wc_vars))))
+
+```
+
+## Issues
+
+Environmental variables of cereal (`cereal_gw_kg`, `cereal_lu_m2`, `cereal_wc_m3`) have all zero values. Andrew M has been notified.
+
+## Changes
+All food group variables (`*_kcal`, `*_gram`, `*_srv`, `*_gw_kg`, `*_lu_m2`, `*_wc_m3`) were winsorized at the 99.9th percentitle of each variable. Total `kcal`, `gram`, `srv`, `gw_kg`, `lu_m2`, and `wc_m3` were recalculated by summing across 28 food groups.
+
+## Mean plots of environmental impact by food group
+
+```{r echo = FALSE}
+
+# Mean plots of environmental variables by food groups
+MeanPlot <- function(data, vars){
+  data %>% 
+    select(all_of(vars)) %>% 
+    summarize_all(mean) %>% 
+    pivot_longer(all_of(vars), names_to = "Variable", values_to = "Mean") %>% 
+    ggplot(aes(x = reorder(Variable, Mean), y = Mean)) + 
+    geom_bar(stat = "identity") +
+    coord_flip() +
+    labs(x = "Food group")
+}
+
+```
+
+* Mean GWP by food group: The consumption of `dairy` contributes to the largest GWP, followed by `beef` and `water`, among 28 food groups.
+
+* Mean land use by food group: `dairy` followed by `veg`, `legumes` and `whlgrain`.
+
+* Mean water consumption by food group: `fvjuice`, followed by `veg` and `fruit`.
+
+```{r echo = FALSE, fig.height = 4, out.width=c('50%', '50%'), fig.show='hold'}
+ev2 %>% MeanPlot(gwp_vars)
+ev2 %>% MeanPlot(lu_vars)
+ev2 %>% MeanPlot(wc_vars)
+```
+
+## Contribution of food groups (%) over total energy intake
+
+```{r, echo = FALSE, message = FALSE}
+pct_ev_plot <- function(vars, denominator, label){
+  denominator <- sym(denominator)
+  ylab <- paste("Food group", label, "/ Total", label, "* 100")
+  tmp <- ev2 %>% 
+    mutate_at(all_of(vars), ~ .x / !!denominator * 100) %>% 
+    pivot_longer(all_of(vars[-28]), names_to = "Variable", values_to = "Value") %>% 
+    mutate(Variable = factor(Variable, levels = vars[-28])) %>% 
+    ggplot(aes(x = kcal, y = Value, color = Variable)) +
+    geom_smooth() + 
+    labs(x = "Total energy intake (kcal) per day", y = ylab)
+  # tmp  + theme(legend.position = "bottom", legend.title = element_blank())
+  tmp + facet_wrap(~Variable, ncol = 7) +
+    theme(legend.position = "none")
+}
+
+```
+
+* GWP: 
+
+```{r echo = FALSE, message = FALSE}
+pct_ev_plot(gwp_vars, "gw_kg", "GWP")
+```
+
+* Land use: 
+
+```{r echo = FALSE, message = FALSE}
+pct_ev_plot(lu_vars, "lu_m2", "LU")
+```
+
+* Water consumption: 
+
+```{r echo = FALSE, message = FALSE}
+pct_ev_plot(wc_vars, "wc_m3", "WC")
+```
+
+

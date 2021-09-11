@@ -5,7 +5,7 @@
 browseURL("http://sph.wiki/keiji/projects:envnutr:start")
 
 # Required packages
-pacs <- c("tidyverse", "readxl", "tableone", "GGally", "egg")
+pacs <- c("tidyverse", "readxl", "tableone", "GGally", "egg", "DescTools")
 sapply(pacs, require, character.only = TRUE)
 
 # Read data ---------------------------------------------------------------
@@ -49,7 +49,7 @@ ev %>%
   print(showAllLevels = TRUE)
 
 
-# Total intake and environmentas impact -----------------------------------
+# Total intake and environmental impact -----------------------------------
 
 total_vars <- c("kcal", "gram", "srv", "gw_kg", "lu_m2", "wc_m3")
 
@@ -135,27 +135,38 @@ gwp_vars  <- paste0(fg_name, "_gw_kg")
 lu_vars   <- paste0(fg_name, "_lu_m2")
 wc_vars   <- paste0(fg_name, "_wc_m3")
 
+# Winsorize food group variables at 99.9 percentitle
+# Recalculate total kcal, gram, srv, gwp, lu, and wc
+ev2 <- ev %>% 
+  mutate(across(fruit_kcal:cereal_srv, Winsorize, probs = c(0, 0.999))) %>% 
+  mutate(kcal = rowSums(across(all_of(kcal_vars))),
+         gram = rowSums(across(all_of(gram_vars))),
+         srv  = rowSums(across(all_of(srv_vars))),
+         gw_kg = rowSums(across(all_of(gwp_vars))),
+         lu_m2 = rowSums(across(all_of(lu_vars))),
+         wc_m3 = rowSums(across(all_of(wc_vars))))
+
 # Descriptive stats
-all_desc <- function(vars, digits = 2){
-  ev %>% 
+all_desc <- function(data, vars, digits = 2){
+  data %>% 
     select(all_of(vars)) %>% 
     psych::describe(quant=c(.25,.75, .9, .95, .99, .995, .999)) %>% 
     select(min, Q0.25, median, Q0.75:Q0.999, max, mean, sd, skew) %>%
     print(digits = digits)
 }
 
-all_desc(kcal_vars, digits = 1)
-all_desc(gram_vars, digits = 1)
-all_desc(srv_vars, digits = 1)
-all_desc(gwp_vars)
-all_desc(lu_vars)
-all_desc(wc_vars)
+ev2 %>% all_desc(kcal_vars, digits = 1)
+ev2 %>% all_desc(gram_vars, digits = 1)
+ev2 %>% ll_desc(srv_vars, digits = 1)
+ev2 %>% all_desc(gwp_vars)
+ev2 %>% all_desc(lu_vars)
+ev2 %>% all_desc(wc_vars)
 
 # Histograms
-all_histogram <- function(vars, ncol = 6, log = FALSE){
-  out <- ev %>% 
+all_histogram <- function(data, vars, ncol = 6, log = FALSE){
+  out <- data %>% 
     select(all_of(vars)) %>% 
-    pivot_longer(vars, names_to = "variable", values_to = "value") %>% 
+    pivot_longer(all_of(vars), names_to = "variable", values_to = "value") %>% 
     mutate(variable = factor(variable, levels = vars)) %>% 
     ggplot(aes(x = value)) +
     geom_histogram() +
@@ -166,19 +177,19 @@ all_histogram <- function(vars, ncol = 6, log = FALSE){
 }
 
 # pdf("./output/histogram food groups.pdf", width = 11, height = 8)
-all_histogram(kcal_vars)
-all_histogram(gram_vars)
-all_histogram(srv_vars)
-all_histogram(gwp_vars)
-all_histogram(lu_vars)
-all_histogram(wc_vars)
+ev2 %>% all_histogram(kcal_vars)
+ev2 %>% all_histogram(gram_vars)
+ev2 %>% all_histogram(srv_vars)
+ev2 %>% all_histogram(gwp_vars)
+ev2 %>% all_histogram(lu_vars)
+ev2 %>% all_histogram(wc_vars)
 # dev.off()
 
 # Scatter plots between intake and env variable
 compScatter <- function(fg, y, x = "_gram"){
   x_fg <- sym(paste0(fg, x))
   y_fg <- sym(paste0(fg, y))
-  ev %>% 
+  ev2 %>% 
     ggplot(aes(x = !!x_fg, y = !!y_fg)) + 
     geom_point(alpha = 0.2) + 
     geom_smooth(method = "lm", se = TRUE)
@@ -191,8 +202,8 @@ ggarrange(plots = gwp_plots, ncol = 4)
 # dev.off()
 
 # Mean plots of environmental variables by food groups
-MeanPlot <- function(vars){
-  ev %>% 
+MeanPlot <- function(data, vars){
+  data %>% 
     select(vars) %>% 
     summarize_all(mean) %>% 
     pivot_longer(vars, names_to = "Variable", values_to = "Mean") %>% 
@@ -204,9 +215,33 @@ MeanPlot <- function(vars){
 
 # pdf("Mean plots env impact.pdf", width = 12, height = 4)
 ggarrange(
-  MeanPlot(gwp_vars),
-  MeanPlot(lu_vars),
-  MeanPlot(wc_vars),
+  ev2 %>% MeanPlot(gwp_vars),
+  ev2 %>% MeanPlot(lu_vars),
+  ev2 %>% MeanPlot(wc_vars),
   ncol = 3
 )
 # dev.off()
+
+names(ev)
+
+# Kcal vs proportions of env impact from food groups ----------------------
+
+pct_ev_plot <- function(vars, denominator, label){
+  denominator <- sym(denominator)
+  ylab <- paste("Food group", label, "/ Total", label, "* 100")
+  tmp <- ev2 %>% 
+    mutate_at(all_of(vars), ~ .x / !!denominator * 100) %>% 
+    pivot_longer(all_of(vars[-28]), names_to = "Variable", values_to = "Value") %>% 
+    mutate(Variable = factor(Variable, levels = vars[-28])) %>% 
+    ggplot(aes(x = kcal, y = Value, color = Variable)) +
+    geom_smooth() + 
+    labs(x = "Total energy intake (kcal) per day", y = ylab)
+  # tmp  + theme(legend.position = "bottom", legend.title = element_blank())
+  tmp + facet_wrap(~Variable, ncol = 7) +
+    theme(legend.position = "none")
+}
+
+pct_ev_plot(kcal_vars, "kcal", "Kcal")
+pct_ev_plot(gwp_vars, "gw_kg", "GWP")
+pct_ev_plot(lu_vars, "lu_m2", "LU")
+pct_ev_plot(wc_vars, "wc_m3", "WC")
