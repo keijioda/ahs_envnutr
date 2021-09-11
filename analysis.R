@@ -49,83 +49,13 @@ ev %>%
   print(showAllLevels = TRUE)
 
 
-# Total intake and environmental impact -----------------------------------
+# Define food groups and total variables ----------------------------------
 
 total_vars <- c("kcal", "gram", "srv", "gw_kg", "lu_m2", "wc_m3")
-
-ev %>% 
-  select(all_of(total_vars)) %>% 
-  summary()
-
-# Distribution of total intake
-# kcal restricted b/w 500 and 4500 kcal
-ev %>% 
-  select(kcal, gram, srv) %>% 
-  psych::describe(quant=c(.25,.75)) %>% 
-  rename(Q1 = Q0.25, Q3 = Q0.75) %>% 
-  select(min, Q1, median, Q3, max, mean, sd, skew)
-
-# Histogram of total intake in kcal, gram, servings per day
-# pdf("./output/histogram total intake.pdf", width = 9, height = 3)
-ev %>% 
-  select(kcal, gram, srv) %>% 
-  pivot_longer(kcal:srv, names_to = "variable", values_to = "value") %>% 
-  mutate(variable = factor(variable, levels = total_vars[1:3])) %>% 
-  ggplot(aes(x = value)) +
-  geom_histogram(bins = 50) +
-  facet_wrap(~ variable, scales = "free")
-# dev.off()
-
-ev %>% 
-  select(kcal, gram, srv) %>% 
-  ggpairs(lower = list(continuous = wrap("points", alpha = 0.2)))
-
-# Compare kcal and gram intake
-ev_highlight <- ev %>% filter(gram >= 9500)
-
-# pdf("./output/scatterplot kcal vs gram.pdf", width = 7, height = 5)
-ev %>% 
-  ggplot(aes(x = gram, y = kcal)) + 
-  geom_point(alpha = 0.2, shape = 16, stroke = 0) +
-  geom_point(data = ev_highlight, aes(x = gram, y = kcal), shape = 1, size = 5, color = "red") +
-  labs(x = "Total intake in gram/day", y = "Total intake in kcal/day")
-# dev.off()
-
-# Distribution of total env impact
-ev %>% 
-  select(gw_kg, lu_m2, wc_m3) %>% 
-  # mutate_all(log) %>% 
-  psych::describe(quant=c(.25,.75)) %>% 
-  rename(Q1 = Q0.25, Q3 = Q0.75) %>% 
-  select(min, Q1, median, Q3, max, mean, sd, skew)
-
-# Histogram
-# pdf("./output/histogram total env impact.pdf", width = 9, height = 3)
-ev %>% 
-  select(gw_kg, lu_m2, wc_m3) %>% 
-  pivot_longer(gw_kg:wc_m3, names_to = "variable", values_to = "value") %>% 
-  mutate(variable = factor(variable, levels = c("gw_kg", "lu_m2", "wc_m3"))) %>% 
-  # mutate_if(is.numeric, log) %>% 
-  ggplot(aes(x = value)) +
-  geom_histogram(bins = 50) +
-  facet_wrap(~ variable, scales = "free")
-# dev.off()
-
-# pdf("./output/scatterplot matrix total env impact.pdf", width = 6, height = 6)
-# pdf("./output/scatterplot matrix log total env impact.pdf", width = 6, height = 6)
-ev %>% 
-  select(gw_kg, lu_m2, wc_m3) %>% 
-  # mutate_all(log) %>%
-  ggpairs(lower = list(continuous = wrap("points", alpha = 0.2, shape = 16, stroke = 0)))
-# dev.off()
-
-
-# Food group variables ----------------------------------------------------
 
 # 28 Food groups
 fg_name <- grep("_gram", names(ev), value = TRUE) %>% 
   gsub("_gram", "", .)
-fg_name
 
 # Create lists of variables
 kcal_vars <- paste0(fg_name, "_kcal")
@@ -145,6 +75,79 @@ ev2 <- ev %>%
          gw_kg = rowSums(across(all_of(gwp_vars))),
          lu_m2 = rowSums(across(all_of(lu_vars))),
          wc_m3 = rowSums(across(all_of(wc_vars))))
+
+# Total intake and environmental impact -----------------------------------
+
+ev2 %>% 
+  select(all_of(total_vars)) %>% 
+  summary()
+
+# Distribution of total intake
+# kcal restricted b/w 500 and 4500 kcal
+ev2 %>% 
+  select(kcal, gram, srv) %>% 
+  psych::describe(quant=c(.25,.75)) %>% 
+  rename(Q1 = Q0.25, Q3 = Q0.75) %>% 
+  select(min, Q1, median, Q3, max, mean, sd, skew)
+
+# Histogram of total intake in kcal, gram, servings per day
+# pdf("./output/histogram total intake.pdf", width = 9, height = 3)
+ev2 %>% 
+  select(kcal, gram, srv) %>% 
+  pivot_longer(kcal:srv, names_to = "variable", values_to = "value") %>% 
+  mutate(variable = factor(variable, levels = total_vars[1:3])) %>% 
+  ggplot(aes(x = value)) +
+  geom_histogram(bins = 50) +
+  facet_wrap(~ variable, scales = "free")
+# dev.off()
+
+ev2 %>% 
+  select(kcal, gram, srv) %>% 
+  ggpairs(lower = list(continuous = wrap("points", alpha = 0.2)))
+
+# Compare kcal and gram intake
+ev_highlight <- ev2 %>% filter(gram >= 9500)
+
+# pdf("./output/scatterplot kcal vs gram.pdf", width = 7, height = 5)
+ev2 %>% 
+  ggplot(aes(x = gram, y = kcal)) + 
+  geom_point(alpha = 0.2, shape = 16, stroke = 0) +
+  geom_point(data = ev_highlight, aes(x = gram, y = kcal), shape = 1, size = 5, color = "red") +
+  labs(x = "Total intake in gram/day", y = "Total intake in kcal/day")
+# dev.off()
+
+# Distribution of total env impact
+ev2 %>% 
+  select(gw_kg, lu_m2, wc_m3) %>% 
+  # mutate_all(log) %>% 
+  psych::describe(quant=c(.25,.75)) %>% 
+  rename(Q1 = Q0.25, Q3 = Q0.75) %>% 
+  select(min, Q1, median, Q3, max, mean, sd, skew)
+
+# Histogram
+# pdf("./output/histogram total env impact.pdf", width = 9, height = 3)
+ev2 %>% 
+  select(gw_kg, lu_m2, wc_m3) %>% 
+  pivot_longer(gw_kg:wc_m3, names_to = "variable", values_to = "value") %>% 
+  mutate(variable = factor(variable, levels = c("gw_kg", "lu_m2", "wc_m3"))) %>% 
+  # mutate_if(is.numeric, log) %>% 
+  ggplot(aes(x = value)) +
+  geom_histogram(bins = 50) +
+  facet_wrap(~ variable, scales = "free")
+# dev.off()
+
+# pdf("./output/scatterplot matrix total env impact.pdf", width = 6, height = 6)
+# pdf("./output/scatterplot matrix log total env impact.pdf", width = 6, height = 6)
+ev2 %>% 
+  select(gw_kg, lu_m2, wc_m3) %>% 
+  # mutate_all(log) %>%
+  ggpairs(lower = list(continuous = wrap("points", alpha = 0.2, shape = 16, stroke = 0)))
+# dev.off()
+
+
+# Food group variables ----------------------------------------------------
+
+fg_name
 
 # Descriptive stats
 all_desc <- function(data, vars, digits = 2){
@@ -222,7 +225,6 @@ ggarrange(
 )
 # dev.off()
 
-names(ev)
 
 # Kcal vs proportions of env impact from food groups ----------------------
 

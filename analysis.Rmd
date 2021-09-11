@@ -44,7 +44,6 @@ total_vars <- c("kcal", "gram", "srv", "gw_kg", "lu_m2", "wc_m3")
 # 28 Food groups
 fg_name <- grep("_gram", names(ev), value = TRUE) %>% 
   gsub("_gram", "", .)
-fg_name
 
 # Create lists of variables
 kcal_vars <- paste0(fg_name, "_kcal")
@@ -67,12 +66,87 @@ ev2 <- ev %>%
 
 ```
 
-## Issues
+## Dataset
+* File path: `M:\Groups\Nutrition\Environmental Nutrition\AHS-2 Environment and Health`
+* File Name: `baseline-environmental-data-per-subject-20210824.csv`
 
-Environmental variables of cereal (`cereal_gw_kg`, `cereal_lu_m2`, `cereal_wc_m3`) have all zero values. Andrew M has been notified.
+* Includes *n* = `r nrow(ev2)` subjects and
+* 187 variables:
+  * Demographics:
+    * Age at baseline: `agein`
+    * BMI: `bmi`
+    * Education, 3 levels: `edu3cat`
+    * Gender: `female`
+    * Race (Black/Non-Black): `black`
+  * Total intake in kcal, gram and servings per day
+  * 28 food groups in:
+    * kcal/day: `*_kcal`
+    * gram/day: `*_gram`
+    * standard servings/day: `*_srv`
+    * GWP (kg CO<sub>2</sub>-eq): `*_gw_kg`
+    * land use (m²a): `*_lu_m2`
+    * water consumption (m³): `*_wc_m3`
+    * (replace * with food group name -- see below)
+* There are 28 food groups:
 
-## Changes
-All food group variables (`*_kcal`, `*_gram`, `*_srv`, `*_gw_kg`, `*_lu_m2`, `*_wc_m3`) were winsorized at the 99.9th percentitle of each variable. Total `kcal`, `gram`, `srv`, `gw_kg`, `lu_m2`, and `wc_m3` were recalculated by summing across 28 food groups.
+```{r echo = FALSE}
+fg_name
+```
+
+### Issues
+
+* Environmental variables of cereal (`cereal_gw_kg`, `cereal_lu_m2`, `cereal_wc_m3`) have all zero values. Andrew M has been notified.
+
+### Changes
+
+* `pork` and `beef` intakes were now separated.
+* All food group variables (`*_kcal`, `*_gram`, `*_srv`, `*_gw_kg`, `*_lu_m2`, `*_wc_m3`) were winsorized at the 99.9th percentile of each variable. Total `kcal`, `gram`, `srv`, `gw_kg`, `lu_m2`, and `wc_m3` were recalculated by summing across 28 food groups.
+
+## Demographics
+
+```{r echo = FALSE}
+# Demographics table, unstratified
+ev2 %>% 
+  CreateTableOne(demo_vars, data = .) %>% 
+  print(showAllLevels = TRUE)
+```
+
+## Total food intake
+* Distributions of total intake in kcal, gram and servings per day
+  * It appears that those with kcal <500 or >4500 are already excluded.
+  * The max gram intake became more reasonable after winsorizing data.
+
+```{r echo = FALSE}
+# Distribution of total intake
+ev2 %>% 
+  select(kcal, gram, srv) %>% 
+  psych::describe(quant=c(.25,.75)) %>% 
+  rename(Q1 = Q0.25, Q3 = Q0.75) %>% 
+  select(min, Q1, median, Q3, max, mean, sd, skew)
+```
+
+## Total environmental impact
+* Distributions of total GWP, land use and water consumption are right-skewed:
+
+```{r echo = FALSE, fig.height = 2.5}
+# Distribution of total env impact
+ev2 %>% 
+  select(gw_kg, lu_m2, wc_m3) %>% 
+  # mutate_all(log) %>% 
+  psych::describe(quant=c(.25,.75)) %>% 
+  rename(Q1 = Q0.25, Q3 = Q0.75) %>% 
+  select(min, Q1, median, Q3, max, mean, sd, skew)
+
+ev2 %>% 
+  select(gw_kg, lu_m2, wc_m3) %>% 
+  pivot_longer(gw_kg:wc_m3, names_to = "variable", values_to = "value") %>% 
+  mutate(variable = factor(variable, levels = c("gw_kg", "lu_m2", "wc_m3"))) %>% 
+  # mutate_if(is.numeric, log) %>% 
+  ggplot(aes(x = value)) +
+  geom_histogram(bins = 50) +
+  facet_wrap(~ variable, scales = "free")
+
+```
 
 ## Mean plots of environmental impact by food group
 
@@ -98,11 +172,13 @@ MeanPlot <- function(data, vars){
 
 * Mean water consumption by food group: `fvjuice`, followed by `veg` and `fruit`.
 
-```{r echo = FALSE, fig.height = 4, out.width=c('50%', '50%'), fig.show='hold'}
+```{r echo = FALSE, fig.height = 5, out.width=c('50%', '50%'), fig.show='hold'}
 ev2 %>% MeanPlot(gwp_vars)
 ev2 %>% MeanPlot(lu_vars)
 ev2 %>% MeanPlot(wc_vars)
 ```
+
+\newpage
 
 ## Contribution of food groups (%) over total energy intake
 
@@ -124,22 +200,29 @@ pct_ev_plot <- function(vars, denominator, label){
 
 ```
 
-* GWP: 
+* Kcal: `fruit` intake explains >10% of the total energy intake. However, as the total energy increases, % kcal from `whlgrain` increases to >15%. The proportion of `dairy` in terms of kcal remains constant at ~7.5%.
 
-```{r echo = FALSE, message = FALSE}
+```{r echo = FALSE, message = FALSE, warning = FALSE, out.width = '70%'}
+pct_ev_plot(kcal_vars, "kcal", "Kcal")
+```
+
+* GWP: Again, you see the GWP of `dairy` intake is the highest among all food groups. Although % kcal of `dairy` is constant, its GWP appears to be positively associated with total kcal, plateauing around 18% of total GWP. The GWP of `water` quickly declines as kcal increases.
+
+```{r echo = FALSE, message = FALSE, out.width = '70%'}
 pct_ev_plot(gwp_vars, "gw_kg", "GWP")
 ```
 
-* Land use: 
+\newpage
 
-```{r echo = FALSE, message = FALSE}
+* Land use: Again, you see the land uses of `dairy`, `veg`, and `legumes` are higher than other food groups.
+
+```{r echo = FALSE, message = FALSE, out.width = '70%'}
 pct_ev_plot(lu_vars, "lu_m2", "LU")
 ```
 
-* Water consumption: 
+* Water consumption: Again, you see the water consumptions of `fruit`, `fvjuice`, and `veg` are higher than other food groups. For other food groups, water consumption remains very low.
 
-```{r echo = FALSE, message = FALSE}
+```{r echo = FALSE, message = FALSE, out.width = '70%'}
 pct_ev_plot(wc_vars, "wc_m3", "WC")
 ```
-
 
