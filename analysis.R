@@ -247,3 +247,7 @@ pct_ev_plot(kcal_vars, "kcal", "Kcal")
 pct_ev_plot(gwp_vars, "gw_kg", "GWP")
 pct_ev_plot(lu_vars, "lu_m2", "LU")
 pct_ev_plot(wc_vars, "wc_m3", "WC")
+
+
+# Energy-adjustment at 2000 kcal?
+# Define dietary pattern

@@ -1,4 +1,4 @@
-**AHS-2 Environmental Nutrition**
+AHS-2 Environmental Nutrition
 ================
 
 ## Dataset
@@ -42,10 +42,11 @@
 ### Issues
 
 -   Environmental variables of cereal (`cereal_gw_kg`, `cereal_lu_m2`,
-    `cereal_wc_m3`) have all zero values. Andrew M has been notified.
+    `cereal_wc_m3`) have all zero values. AM has been notified.
 
 ### Changes
 
+-   More subjects (+12,000) included.
 -   `pork` and `beef` intakes were now separated.
 -   All food group variables (`*_kcal`, `*_gram`, `*_srv`, `*_gw_kg`,
     `*_lu_m2`, `*_wc_m3`) were winsorized at the 99.9th percentile of
@@ -94,7 +95,7 @@
     ## lu_m2 0.00 1.04   1.43 1.96  7.81 1.58 0.76 1.24
     ## wc_m3 0.01 0.67   0.99 1.39  7.04 1.12 0.66 1.87
 
-![](analysis_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
+![](summary_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
 
 ## Mean plots of environmental impact by food group
 
@@ -108,7 +109,7 @@
 -   Mean water consumption by food group: `fvjuice`, followed by `veg`
     and `fruit`.
 
-<img src="analysis_files/figure-gfm/unnamed-chunk-6-1.png" width="50%" /><img src="analysis_files/figure-gfm/unnamed-chunk-6-2.png" width="50%" /><img src="analysis_files/figure-gfm/unnamed-chunk-6-3.png" width="50%" />
+<img src="summary_files/figure-gfm/unnamed-chunk-6-1.png" width="50%" /><img src="summary_files/figure-gfm/unnamed-chunk-6-2.png" width="50%" /><img src="summary_files/figure-gfm/unnamed-chunk-6-3.png" width="50%" />
 
 ## Contribution of food groups (%) over total energy intake
 
@@ -122,7 +123,7 @@
     increases to &gt;15%. The proportion of `dairy` in terms of kcal
     remains constant at \~7.5%.
 
-<img src="analysis_files/figure-gfm/unnamed-chunk-8-1.png" width="70%" />
+<img src="summary_files/figure-gfm/unnamed-chunk-8-1.png" width="70%" />
 
 -   GWP: Again, you see the GWP of `dairy` intake is the highest among
     all food groups. Although % kcal of `dairy` is constant, its GWP
@@ -130,15 +131,15 @@
     around 18% of total GWP. The GWP of `water` quickly declines as kcal
     increases.
 
-<img src="analysis_files/figure-gfm/unnamed-chunk-9-1.png" width="70%" />
+<img src="summary_files/figure-gfm/unnamed-chunk-9-1.png" width="70%" />
 
 -   Land use: Again, you see the land uses of `dairy`, `veg`, and
     `legumes` are higher than other food groups.
 
-<img src="analysis_files/figure-gfm/unnamed-chunk-10-1.png" width="70%" />
+<img src="summary_files/figure-gfm/unnamed-chunk-10-1.png" width="70%" />
 
 -   Water consumption: Again, you see the water consumptions of `fruit`,
     `fvjuice`, and `veg` are higher than other food groups. For other
     food groups, water consumption remains very low.
 
-<img src="analysis_files/figure-gfm/unnamed-chunk-11-1.png" width="70%" />
+<img src="summary_files/figure-gfm/unnamed-chunk-11-1.png" width="70%" />

@@ -1,9 +1,10 @@
 ---
-title: '**AHS-2 Environmental Nutrition**'
-output: pdf_document
-header-includes:
-  - \usepackage{titling}
-  - \setlength{\droptitle}{-8em} 
+title: 'AHS-2 Environmental Nutrition'
+output: github_document
+# output: pdf_document
+# header-includes:
+  # - \usepackage{titling}
+  # - \setlength{\droptitle}{-8em} 
 ---
 
 ```{r setup, include=FALSE}
@@ -95,10 +96,11 @@ fg_name
 
 ### Issues
 
-* Environmental variables of cereal (`cereal_gw_kg`, `cereal_lu_m2`, `cereal_wc_m3`) have all zero values. Andrew M has been notified.
+* Environmental variables of cereal (`cereal_gw_kg`, `cereal_lu_m2`, `cereal_wc_m3`) have all zero values. AM has been notified.
 
 ### Changes
 
+* More subjects (+12,000) included.
 * `pork` and `beef` intakes were now separated.
 * All food group variables (`*_kcal`, `*_gram`, `*_srv`, `*_gw_kg`, `*_lu_m2`, `*_wc_m3`) were winsorized at the 99.9th percentile of each variable. Total `kcal`, `gram`, `srv`, `gw_kg`, `lu_m2`, and `wc_m3` were recalculated by summing across 28 food groups.
 
