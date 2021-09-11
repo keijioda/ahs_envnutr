@@ -128,7 +128,7 @@ ev2 %>%
 ## Total environmental impact
 * Distributions of total GWP, land use and water consumption are right-skewed:
 
-```{r echo = FALSE, fig.height = 2.5}
+```{r echo = FALSE, fig.height = 2.3}
 # Distribution of total env impact
 ev2 %>% 
   select(gw_kg, lu_m2, wc_m3) %>% 
@@ -181,6 +181,8 @@ ev2 %>% MeanPlot(wc_vars)
 \newpage
 
 ## Contribution of food groups (%) over total energy intake
+
+* Percent contribution of food groups, in terms of kcal, GWP, land use, and water consumption, was calculated for each subjects and plotted against the total energy intake. Graphs below show a smoothed trend over the total kcal for each food group.
 
 ```{r, echo = FALSE, message = FALSE}
 pct_ev_plot <- function(vars, denominator, label){
