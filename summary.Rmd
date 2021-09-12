@@ -137,11 +137,12 @@ ev %>% MeanPlot(wc_vars)
 
 ## Comparisons of environmental impact by dietary pattern
 
-* Total energy-adjusted GWP (`gw_kg_std`), land use (`lu_m2_std`), and water consumption (`wc_m3_std`) by dietary pattern are showed in violin plots below. Note that the horizontal axis is on the pseudo-log scale.
+* Total energy-adjusted GWP (`gw_kg_std`), land use (`lu_m2_std`), and water consumption (`wc_m3_std`) by dietary pattern are shown in violin plots below. Note that the horizontal axis is on the pseudo-log scale.
 * GWP and land use increase in the order of vegan < lacto-ovo < pesco < semi < non-veg.
-* For water consumption, vegans have the highest usage, followed by pesco, lacto-ovo, semi, and non-veg the lowest.
+  * The total GWP of non-vegetarians is almost twice as high as that of vegans.
+* For water consumption, vegans have the highest usage: vegan > pesco > lacto-ovo > semi > non-veg.
 
-```{r echo = FALSE, fig.height = 5, fig.width = 9, message = FALSE}
+```{r echo = FALSE, fig.height = 5, fig.width = 10, message = FALSE}
 ev %>% 
   pivot_longer(gw_kg_std:wc_m3_std, names_to = "variable", values_to = "value") %>% 
   mutate(variable = factor(variable, levels = c("gw_kg_std", "lu_m2_std", "wc_m3_std"))) %>% 

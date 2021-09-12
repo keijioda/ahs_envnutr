@@ -133,8 +133,8 @@ AHS-2 Environmental Nutrition
     pseudo-log scale.
 -   GWP and land use increase in the order of vegan &lt; lacto-ovo &lt;
     pesco &lt; semi &lt; non-veg.
--   For water consumption, vegans have the highest usage, followed by
-    pesco, lacto-ovo, semi, and non-veg the lowest.
+-   For water consumption, vegans have the highest usage: vegan &gt;
+    pesco &gt; lacto-ovo &gt; semi &gt; non-veg.
 
 ![](summary_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
 
