@@ -128,11 +128,13 @@ AHS-2 Environmental Nutrition
 ## Comparisons of environmental impact by dietary pattern
 
 -   Total energy-adjusted GWP (`gw_kg_std`), land use (`lu_m2_std`), and
-    water consumption (`wc_m3_std`) by dietary pattern are showed in
+    water consumption (`wc_m3_std`) by dietary pattern are shown in
     violin plots below. Note that the horizontal axis is on the
     pseudo-log scale.
 -   GWP and land use increase in the order of vegan &lt; lacto-ovo &lt;
     pesco &lt; semi &lt; non-veg.
+    -   The total GWP of non-vegetarians is almost twice as high as that
+        of vegans.
 -   For water consumption, vegans have the highest usage: vegan &gt;
     pesco &gt; lacto-ovo &gt; semi &gt; non-veg.
 
