@@ -57,6 +57,7 @@ fg_name
 * Dietary pattern (5 groups) added.
 * `pork` and `beef` intakes are now separated.
 * All food group variables (`*_kcal`, `*_gram`, `*_srv`, `*_gw_kg`, `*_lu_m2`, `*_wc_m3`) were winsorized at the 99.9th percentile of each variable. Total `kcal`, `gram`, `srv`, `gw_kg`, `lu_m2`, and `wc_m3` were recalculated by summing across 28 food groups after winsorization.
+* Environmental impact variables (`*_gw_kg`, `*_lu_m2`, `*_wc_m3`) were standardized to 2000 kcal/day. This was done as follows: non-zero values of each environmental variable were log-transformed (due to skewness) and then regressed on the total energy. Residuals from the regression were added by predicted values for 2000 kcal and then back-transformed to the original unit. Zero values remained zero in this process.
 
 ## Demographics
 
@@ -134,53 +135,32 @@ ev %>% MeanPlot(lu_vars)
 ev %>% MeanPlot(wc_vars)
 ```
 
-\newpage
+## Comparisons of environmental impact by dietary pattern
 
-## Contribution of food groups (%) over total energy intake
+* Total energy-adjusted GWP (`gw_kg_std`), land use (`lu_m2_std`), and water consumption (`wc_m3_std`) by dietary pattern are showed in violin plots below. Note that the horizontal axis is on the pseudo-log scale.
+* GWP and land use increase in the order of vegan < lacto-ovo < pesco < semi < non-veg.
+* For water consumption, vegans have the highest usage, followed by pesco, lacto-ovo, semi, and non-veg the lowest.
 
-* Percent contribution of food groups, in terms of kcal, GWP, land use, and water consumption, was calculated for each subjects and plotted against the total energy intake. Graphs below show a smoothed trend over the total kcal for each food group.
+```{r echo = FALSE, fig.height = 5, fig.width = 9, message = FALSE}
+ev %>% 
+  pivot_longer(gw_kg_std:wc_m3_std, names_to = "variable", values_to = "value") %>% 
+  mutate(variable = factor(variable, levels = c("gw_kg_std", "lu_m2_std", "wc_m3_std"))) %>% 
+  filter(!is.na(vegstat)) %>% 
+  ggplot(aes(x = vegstat, y = value, fill = vegstat)) +
+  geom_violin() +
+  geom_boxplot(width = 0.1, fill = "white", outlier.shape = NA) +
+  coord_flip() +
+  scale_x_discrete(limits = rev(levels(ev$vegstat))) +
+  scale_y_continuous(trans = scales::pseudo_log_trans(base = 10)) +
+  facet_grid(~variable, scales = "free") +
+  labs(x = "Dietary pattern") +
+  theme(legend.position = "none")
 
-```{r, echo = FALSE, message = FALSE}
-pct_ev_plot <- function(data, vars, denominator, label){
-  denominator <- sym(denominator)
-  ylab <- paste("Food group", label, "/ Total", label, "* 100")
-  tmp <- data %>% 
-    mutate_at(all_of(vars), ~ .x / !!denominator * 100) %>% 
-    pivot_longer(all_of(vars[-28]), names_to = "Variable", values_to = "Value") %>% 
-    mutate(Variable = factor(Variable, levels = vars[-28])) %>% 
-    ggplot(aes(x = kcal, y = Value, color = Variable)) +
-    geom_smooth() + 
-    labs(x = "Total energy intake (kcal) per day", y = ylab)
-  # tmp  + theme(legend.position = "bottom", legend.title = element_blank())
-  tmp + facet_wrap(~Variable, ncol = 7) +
-    theme(legend.position = "none")
-}
-
-```
-
-* Kcal: `fruit` intake explains >10% of the total energy intake. However, as the total energy increases, % kcal from `whlgrain` increases to >15%. The proportion of `dairy` in terms of kcal remains constant at ~7.5%.
-
-```{r echo = FALSE, message = FALSE, warning = FALSE, out.width = '70%'}
-ev %>% pct_ev_plot(kcal_vars, "kcal", "Kcal")
-```
-
-* GWP: Again, you see the GWP of `dairy` intake is the highest among all food groups. Although % kcal of `dairy` is constant, its GWP appears to be positively associated with total kcal, plateauing around 18% of total GWP. The GWP of `water` quickly declines as kcal increases.
-
-```{r echo = FALSE, message = FALSE, out.width = '70%'}
-ev %>% pct_ev_plot(gwp_vars, "gw_kg", "GWP")
-```
-
-\newpage
-
-* Land use: Again, you see the land uses of `dairy`, `veg`, and `legumes` are higher than other food groups.
-
-```{r echo = FALSE, message = FALSE, out.width = '70%'}
-ev %>% pct_ev_plot(lu_vars, "lu_m2", "LU")
-```
-
-* Water consumption: Again, you see the water consumptions of `fruit`, `fvjuice`, and `veg` are higher than other food groups. For other food groups, water consumption remains very low.
-
-```{r echo = FALSE, message = FALSE, out.width = '70%'}
-ev %>% pct_ev_plot(wc_vars, "wc_m3", "WC")
+ev %>% 
+  pivot_longer(gw_kg_std:wc_m3_std, names_to = "variable", values_to = "value") %>% 
+  mutate(variable = factor(variable, levels = c("gw_kg_std", "lu_m2_std", "wc_m3_std"))) %>% 
+  filter(!is.na(vegstat)) %>% 
+  group_by(variable, vegstat) %>% 
+  summarize(Median = median(value), Mean = mean(value), SD = sd(value))
 ```
 

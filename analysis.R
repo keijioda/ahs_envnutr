@@ -174,6 +174,12 @@ ggarrange(
   ev %>% MeanPlot(wc_vars),
   ncol = 3
 )
+ggarrange(
+  ev %>% MeanPlot(paste0(gwp_vars, "_std")),
+  ev %>% MeanPlot(paste0(lu_vars, "_std")),
+  ev %>% MeanPlot(paste0(wc_vars, "_std")),
+  ncol = 3
+)
 # dev.off()
 
 
@@ -184,11 +190,12 @@ pct_ev_plot <- function(data, vars, denominator, label){
   ylab <- paste("Food group", label, "/ Total", label, "* 100")
   tmp <- data %>% 
     mutate_at(all_of(vars), ~ .x / !!denominator * 100) %>% 
-    pivot_longer(all_of(vars[-28]), names_to = "Variable", values_to = "Value") %>% 
-    mutate(Variable = factor(Variable, levels = vars[-28])) %>% 
+    mutate(kcal = kcal / 1000) %>% 
+    pivot_longer(all_of(vars), names_to = "Variable", values_to = "Value") %>% 
+    mutate(Variable = factor(Variable, levels = vars)) %>% 
     ggplot(aes(x = kcal, y = Value, color = Variable)) +
     geom_smooth() + 
-    labs(x = "Total energy intake (kcal) per day", y = ylab)
+    labs(x = "Total energy intake per day (in 1000 kcal)", y = ylab)
   # tmp  + theme(legend.position = "bottom", legend.title = element_blank())
   tmp + facet_wrap(~Variable, ncol = 7) +
     theme(legend.position = "none")
@@ -199,5 +206,34 @@ ev %>% pct_ev_plot(gwp_vars, "gw_kg", "GWP")
 ev %>% pct_ev_plot(lu_vars, "lu_m2", "LU")
 ev %>% pct_ev_plot(wc_vars, "wc_m3", "WC")
 
-# Energy-adjustment at 2000 kcal?
-# Define dietary pattern
+ev %>% pct_ev_plot(paste0(gwp_vars, "_std"), "gw_kg", "GWP")
+ev %>% pct_ev_plot(paste0(lu_vars, "_std"), "lu_m2", "LU")
+ev %>% pct_ev_plot(paste0(wc_vars, "_std"), "wc_m3", "WC")
+
+
+# Compare distributions by dietary pattern --------------------------------
+
+ev_vars_std <- c("gw_kg_std", "lu_m2_std", "wc_m3_std")
+
+ev %>% 
+  pivot_longer(gw_kg_std:wc_m3_std, names_to = "variable", values_to = "value") %>% 
+  mutate(variable = factor(variable, levels = ev_vars_std)) %>% 
+  filter(!is.na(vegstat)) %>% 
+  ggplot(aes(x = vegstat, y = value, fill = vegstat)) +
+  geom_violin() +
+  geom_boxplot(width = 0.1, fill = "white", outlier.shape = NA) +
+  coord_flip() +
+  scale_x_discrete(limits = rev(levels(ev$vegstat))) +
+  scale_y_continuous(trans = scales::pseudo_log_trans(base = 10)) +
+  facet_grid(~variable, scales = "free") +
+  labs(x = "Dietary pattern") +
+  theme(legend.position = "none")
+
+ev %>% 
+  pivot_longer(gw_kg_std:wc_m3_std, names_to = "variable", values_to = "value") %>% 
+  mutate(variable = factor(variable, levels = ev_vars_std)) %>% 
+  filter(!is.na(vegstat)) %>% 
+  group_by(variable, vegstat) %>% 
+  summarize(Median = median(value), Mean = mean(value), SD = sd(value))
+
+  

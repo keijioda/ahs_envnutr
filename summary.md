@@ -54,6 +54,13 @@ AHS-2 Environmental Nutrition
     each variable. Total `kcal`, `gram`, `srv`, `gw_kg`, `lu_m2`, and
     `wc_m3` were recalculated by summing across 28 food groups after
     winsorization.
+-   Environmental impact variables (`*_gw_kg`, `*_lu_m2`, `*_wc_m3`)
+    were standardized to 2000 kcal/day. This was done as follows:
+    non-zero values of each environmental variable were log-transformed
+    (due to skewness) and then regressed on the total energy. Residuals
+    from the regression were added by predicted values for 2000 kcal and
+    then back-transformed to the original unit. Zero values remained
+    zero in this process.
 
 ## Demographics
 
@@ -71,8 +78,8 @@ AHS-2 Environmental Nutrition
     ##                     Black          22175 (25.3) 
     ##   vegstat (%)       Vegan           7351 ( 8.4) 
     ##                     Lacto-ovo      26412 (30.0) 
-    ##                     Semi            4772 ( 5.4) 
     ##                     Pesco           8655 ( 9.8) 
+    ##                     Semi            4772 ( 5.4) 
     ##                     Non-veg        40817 (46.4)
 
 ## Total food intake
@@ -118,35 +125,35 @@ AHS-2 Environmental Nutrition
 
 <img src="summary_files/figure-gfm/unnamed-chunk-6-1.png" width="50%" /><img src="summary_files/figure-gfm/unnamed-chunk-6-2.png" width="50%" /><img src="summary_files/figure-gfm/unnamed-chunk-6-3.png" width="50%" />
 
-## Contribution of food groups (%) over total energy intake
+## Comparisons of environmental impact by dietary pattern
 
--   Percent contribution of food groups, in terms of kcal, GWP, land
-    use, and water consumption, was calculated for each subjects and
-    plotted against the total energy intake. Graphs below show a
-    smoothed trend over the total kcal for each food group.
+-   Total energy-adjusted GWP (`gw_kg_std`), land use (`lu_m2_std`), and
+    water consumption (`wc_m3_std`) by dietary pattern are showed in
+    violin plots below. Note that the horizontal axis is on the
+    pseudo-log scale.
+-   GWP and land use increase in the order of vegan &lt; lacto-ovo &lt;
+    pesco &lt; semi &lt; non-veg.
+-   For water consumption, vegans have the highest usage, followed by
+    pesco, lacto-ovo, semi, and non-veg the lowest.
 
--   Kcal: `fruit` intake explains &gt;10% of the total energy intake.
-    However, as the total energy increases, % kcal from `whlgrain`
-    increases to &gt;15%. The proportion of `dairy` in terms of kcal
-    remains constant at \~7.5%.
+![](summary_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
 
-<img src="summary_files/figure-gfm/unnamed-chunk-8-1.png" width="70%" />
-
--   GWP: Again, you see the GWP of `dairy` intake is the highest among
-    all food groups. Although % kcal of `dairy` is constant, its GWP
-    appears to be positively associated with total kcal, plateauing
-    around 18% of total GWP. The GWP of `water` quickly declines as kcal
-    increases.
-
-<img src="summary_files/figure-gfm/unnamed-chunk-9-1.png" width="70%" />
-
--   Land use: Again, you see the land uses of `dairy`, `veg`, and
-    `legumes` are higher than other food groups.
-
-<img src="summary_files/figure-gfm/unnamed-chunk-10-1.png" width="70%" />
-
--   Water consumption: Again, you see the water consumptions of `fruit`,
-    `fvjuice`, and `veg` are higher than other food groups. For other
-    food groups, water consumption remains very low.
-
-<img src="summary_files/figure-gfm/unnamed-chunk-11-1.png" width="70%" />
+    ## # A tibble: 15 x 5
+    ## # Groups:   variable [3]
+    ##    variable  vegstat   Median  Mean    SD
+    ##    <fct>     <fct>      <dbl> <dbl> <dbl>
+    ##  1 gw_kg_std Vegan       1.06  1.07 0.224
+    ##  2 gw_kg_std Lacto-ovo   1.27  1.38 0.500
+    ##  3 gw_kg_std Pesco       1.35  1.46 0.525
+    ##  4 gw_kg_std Semi        1.45  1.57 0.597
+    ##  5 gw_kg_std Non-veg     1.98  2.14 0.824
+    ##  6 lu_m2_std Vegan       1.42  1.43 0.309
+    ##  7 lu_m2_std Lacto-ovo   1.49  1.52 0.364
+    ##  8 lu_m2_std Pesco       1.51  1.54 0.385
+    ##  9 lu_m2_std Semi        1.55  1.58 0.411
+    ## 10 lu_m2_std Non-veg     1.85  1.92 0.561
+    ## 11 wc_m3_std Vegan       1.26  1.36 0.537
+    ## 12 wc_m3_std Lacto-ovo   1.16  1.25 0.502
+    ## 13 wc_m3_std Pesco       1.21  1.30 0.549
+    ## 14 wc_m3_std Semi        1.12  1.21 0.551
+    ## 15 wc_m3_std Non-veg     1.07  1.16 0.524
