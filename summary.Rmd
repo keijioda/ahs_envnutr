@@ -54,6 +54,7 @@ fg_name
 ### Changes
 
 * More subjects (+12,000) included.
+* Dietary pattern (5 groups) added.
 * `pork` and `beef` intakes are now separated.
 * All food group variables (`*_kcal`, `*_gram`, `*_srv`, `*_gw_kg`, `*_lu_m2`, `*_wc_m3`) were winsorized at the 99.9th percentile of each variable. Total `kcal`, `gram`, `srv`, `gw_kg`, `lu_m2`, and `wc_m3` were recalculated by summing across 28 food groups after winsorization.
 

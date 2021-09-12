@@ -37,7 +37,7 @@ AHS-2 Environmental Nutrition
     ## [11] "vegoil"     "eggs"       "dairy"      "dairysub"   "margarine" 
     ## [16] "butter"     "beef"       "procmeat"   "poultry"    "pork"      
     ## [21] "fish"       "water"      "soda"       "cofftea"    "alcbev"    
-    ## [26] "dessert"    "snackfoods" "cereal"
+    ## [26] "dessert"    "snackfoods"
 
 ### Issues
 
@@ -47,11 +47,13 @@ AHS-2 Environmental Nutrition
 ### Changes
 
 -   More subjects (+12,000) included.
--   `pork` and `beef` intakes were now separated.
+-   Dietary pattern (5 groups) added.
+-   `pork` and `beef` intakes are now separated.
 -   All food group variables (`*_kcal`, `*_gram`, `*_srv`, `*_gw_kg`,
     `*_lu_m2`, `*_wc_m3`) were winsorized at the 99.9th percentile of
     each variable. Total `kcal`, `gram`, `srv`, `gw_kg`, `lu_m2`, and
-    `wc_m3` were recalculated by summing across 28 food groups.
+    `wc_m3` were recalculated by summing across 28 food groups after
+    winsorization.
 
 ## Demographics
 
@@ -66,7 +68,12 @@ AHS-2 Environmental Nutrition
     ##   female (%)        Male           30921 (35.1) 
     ##                     Female         57057 (64.9) 
     ##   black (%)         Non-Black      65354 (74.7) 
-    ##                     Black          22175 (25.3)
+    ##                     Black          22175 (25.3) 
+    ##   vegstat (%)       Vegan           7351 ( 8.4) 
+    ##                     Lacto-ovo      26412 (30.0) 
+    ##                     Semi            4772 ( 5.4) 
+    ##                     Pesco           8655 ( 9.8) 
+    ##                     Non-veg        40817 (46.4)
 
 ## Total food intake
 
@@ -79,9 +86,9 @@ AHS-2 Environmental Nutrition
 <!-- -->
 
     ##         min      Q1  median      Q3     max    mean      sd skew
-    ## kcal 140.75 1234.70 1640.30 2145.19 4474.44 1746.07  703.61 0.80
-    ## gram 200.09 2160.76 2768.07 3448.33 9782.78 2851.89 1031.10 0.62
-    ## srv    1.48   30.87   39.56   49.80  129.16   41.17   14.66 0.65
+    ## kcal 140.75 1195.34 1591.82 2089.16 4440.27 1697.58  690.42 0.80
+    ## gram  88.99 2147.52 2754.31 3434.03 9762.23 2838.34 1029.28 0.62
+    ## srv    1.48   30.38   39.05   49.21  127.34   40.65   14.58 0.65
 
 ## Total environmental impact
 

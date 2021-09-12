@@ -44,4 +44,9 @@
                     Female         57057 (64.9) 
   black (%)         Non-Black      65354 (74.7) 
                     Black          22175 (25.3) 
+  vegstat (%)       Vegan           7351 ( 8.4) 
+                    Lacto-ovo      26412 (30.0) 
+                    Semi            4772 ( 5.4) 
+                    Pesco           8655 ( 9.8) 
+                    Non-veg        40817 (46.4)
 ```
