@@ -105,6 +105,35 @@ ev %>%
 
 ```
 
+## Distribution of environmental impact by food group
+
+* GWP
+
+```{r echo = FALSE}
+# Descriptive stats
+all_desc <- function(data, vars, digits = 2){
+  data %>% 
+    select(all_of(vars)) %>% 
+    psych::describe(quant=c(.25,.75)) %>% 
+    select(min, Q0.25, median, Q0.75, max, mean, sd, skew) %>%
+    print(digits = digits)
+}
+ev %>% all_desc(gwp_vars, digits = 3)
+
+```
+
+* Land use
+
+```{r echo = FALSE}
+ev %>% all_desc(lu_vars, digits = 3)
+```
+
+* Water consumption
+
+```{r echo = FALSE}
+ev %>% all_desc(wc_vars, digits = 3)
+```
+
 ## Mean plots of environmental impact by food group
 
 ```{r echo = FALSE}
@@ -139,7 +168,7 @@ ev %>% MeanPlot(wc_vars)
 
 * Total energy-adjusted GWP (`gw_kg_std`), land use (`lu_m2_std`), and water consumption (`wc_m3_std`) by dietary pattern are shown in violin plots below. Note that the horizontal axis is on the pseudo-log scale.
 * GWP and land use increase in the order of vegan < lacto-ovo < pesco < semi < non-veg.
-  * The total GWP of non-vegetarians is almost twice as high as that of vegans.
+  * The average total GWP of non-vegetarians is twice as high as that of vegans.
 * For water consumption, vegans have the highest usage: vegan > pesco > lacto-ovo > semi > non-veg.
 
 ```{r echo = FALSE, fig.height = 5, fig.width = 10, message = FALSE}
@@ -165,3 +194,44 @@ ev %>%
   summarize(Median = median(value), Mean = mean(value), SD = sd(value))
 ```
 
+## Mean plot of environmental impact of food groups by dietary pattern
+
+* GWP
+
+```{r echo = FALSE, message = FALSE, fig.width = 10, fig.height = 8}
+# Function to produce mean, SD and median by dietary pattern
+ev_desc_stats_by_vegstat <- function(data, vars, digits = 3){
+  data %>% 
+    pivot_longer(all_of(vars), names_to = "variable", values_to = "value") %>% 
+    mutate(variable = factor(variable, levels = vars)) %>% 
+    filter(!is.na(vegstat)) %>% 
+    group_by(variable, vegstat) %>% 
+    summarize(Median = median(value), Mean = mean(value), SD = sd(value)) %>% 
+    mutate_if(is.numeric, round, digits)
+}
+# Mean plots of food groups by dietary pattern
+mean_plot_by_vegstat <- function(data, vars){
+  data %>% 
+    ev_desc_stats_by_vegstat(vars) %>%
+    mutate(vegstat = factor(vegstat, labels = c("V", "LO", "P", "S", "NV"))) %>% 
+    ggplot(aes(x = vegstat, y = Mean, fill = vegstat)) +
+    geom_bar(stat = "identity") +
+    labs(x = "Dietary pattern") +
+    facet_wrap(~variable, scales = "free") +
+    theme(legend.position = "bottom")
+}
+
+ev %>% mean_plot_by_vegstat(gwp_vars_std)
+```
+
+* Land use
+
+```{r echo = FALSE, message = FALSE, fig.width = 10, fig.height = 8}
+ev %>% mean_plot_by_vegstat(lu_vars_std)
+```
+
+* Water consumption: Some of food groups have very small values.
+
+```{r echo = FALSE, message = FALSE, fig.width = 10, fig.height = 8}
+ev %>% mean_plot_by_vegstat(wc_vars_std)
+```

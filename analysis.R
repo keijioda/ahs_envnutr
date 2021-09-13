@@ -182,7 +182,6 @@ ggarrange(
 )
 # dev.off()
 
-
 # Kcal vs proportions of env impact from food groups ----------------------
 
 pct_ev_plot <- function(data, vars, denominator, label){
@@ -213,27 +212,59 @@ ev %>% pct_ev_plot(paste0(wc_vars, "_std"), "wc_m3", "WC")
 
 # Compare distributions by dietary pattern --------------------------------
 
+# Function to produce violin plots by dietary pattern
+ev_by_vegstat_plot <- function(data, vars){
+  data %>% 
+    pivot_longer(all_of(vars), names_to = "variable", values_to = "value") %>% 
+    mutate(variable = factor(variable, levels = vars)) %>% 
+    filter(!is.na(vegstat)) %>% 
+    ggplot(aes(x = vegstat, y = value, fill = vegstat)) +
+    geom_violin() +
+    geom_boxplot(width = 0.1, fill = "white", outlier.shape = NA) +
+    coord_flip() +
+    scale_x_discrete(limits = rev(levels(ev$vegstat))) +
+    scale_y_continuous(trans = scales::pseudo_log_trans(base = 10)) +
+    facet_wrap(~variable) +
+    labs(x = "Dietary pattern") +
+    theme(legend.position = "none")
+}
+
+# Function to produce mean, SD and median by dietary pattern
+ev_desc_stats_by_vegstat <- function(data, vars, digits = 3){
+  data %>% 
+    pivot_longer(all_of(vars), names_to = "variable", values_to = "value") %>% 
+    mutate(variable = factor(variable, levels = vars)) %>% 
+    filter(!is.na(vegstat)) %>% 
+    group_by(variable, vegstat) %>% 
+    summarize(Median = median(value), Mean = mean(value), SD = sd(value)) %>% 
+    mutate_if(is.numeric, round, digits)
+}
+
+# Total environmental impact variables
 ev_vars_std <- c("gw_kg_std", "lu_m2_std", "wc_m3_std")
+ev %>% ev_by_vegstat_plot(ev_vars_std)
 
-ev %>% 
-  pivot_longer(gw_kg_std:wc_m3_std, names_to = "variable", values_to = "value") %>% 
-  mutate(variable = factor(variable, levels = ev_vars_std)) %>% 
-  filter(!is.na(vegstat)) %>% 
-  ggplot(aes(x = vegstat, y = value, fill = vegstat)) +
-  geom_violin() +
-  geom_boxplot(width = 0.1, fill = "white", outlier.shape = NA) +
-  coord_flip() +
-  scale_x_discrete(limits = rev(levels(ev$vegstat))) +
-  scale_y_continuous(trans = scales::pseudo_log_trans(base = 10)) +
-  facet_grid(~variable, scales = "free") +
-  labs(x = "Dietary pattern") +
-  theme(legend.position = "none")
-
-ev %>% 
-  pivot_longer(gw_kg_std:wc_m3_std, names_to = "variable", values_to = "value") %>% 
-  mutate(variable = factor(variable, levels = ev_vars_std)) %>% 
-  filter(!is.na(vegstat)) %>% 
-  group_by(variable, vegstat) %>% 
-  summarize(Median = median(value), Mean = mean(value), SD = sd(value))
-
+# Mean, SD and median by dietary pattern
+ev %>% ev_desc_stats_by_vegstat(ev_vars_std)
+ev %>% ev_desc_stats_by_vegstat(wc_vars_std)
   
+# By food groups... not very informative
+ev %>% ev_by_vegstat_plot(gwp_vars_std)
+ev %>% ev_by_vegstat_plot(lu_vars_std)
+ev %>% ev_by_vegstat_plot(wc_vars_std)
+
+# Mean plots of food groups by dietary pattern
+mean_plot_by_vegstat <- function(data, vars){
+  data %>% 
+    ev_desc_stats_by_vegstat(vars) %>%
+    mutate(vegstat = factor(vegstat, labels = c("V", "LO", "P", "S", "NV"))) %>% 
+    ggplot(aes(x = vegstat, y = Mean, fill = vegstat)) +
+    geom_bar(stat = "identity") +
+    labs(x = "Dietary pattern") +
+    facet_wrap(~variable, scales = "free") +
+    theme(legend.position = "bottom")
+}
+
+ev %>% mean_plot_by_vegstat(gwp_vars_std)
+ev %>% mean_plot_by_vegstat(lu_vars_std)
+ev %>% mean_plot_by_vegstat(wc_vars_std)
