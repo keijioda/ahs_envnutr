@@ -10,7 +10,7 @@ AHS-2 Environmental Nutrition
 
 -   Includes *n* = 88008 subjects and
 
--   190 variables including:
+-   190 variables:
 
     -   `analysisid`
     -   Demographics:
@@ -93,7 +93,7 @@ AHS-2 Environmental Nutrition
 
 <!-- -->
 
-    ##         min      Q1  median      Q3     max    mean      sd skew
+    ##         min   Q0.25  median   Q0.75     max    mean      sd skew
     ## kcal 140.75 1234.74 1640.49 2145.30 4474.44 1746.27  703.91 0.80
     ## gram 200.09 2160.77 2768.07 3448.46 9782.78 2852.44 1032.57 0.63
     ## srv    1.48   30.87   39.56   49.80  129.69   41.17   14.68 0.66
@@ -105,10 +105,10 @@ AHS-2 Environmental Nutrition
 
 <!-- -->
 
-    ##        min   Q1 median   Q3   max mean   sd skew
-    ## gw_kg 0.06 1.21   1.69 2.38 11.28 1.93 1.02 1.61
-    ## lu_m2 0.12 1.21   1.65 2.23  8.08 1.81 0.83 1.16
-    ## wc_m3 0.02 0.75   1.08 1.50  7.37 1.21 0.68 1.80
+    ##        min Q0.25 median Q0.75   max mean   sd skew
+    ## gw_kg 0.06  1.21   1.69  2.38 11.28 1.93 1.02 1.61
+    ## lu_m2 0.12  1.21   1.65  2.23  8.08 1.81 0.83 1.16
+    ## wc_m3 0.02  0.75   1.08  1.50  7.37 1.21 0.68 1.80
 
 ![](summary_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
 

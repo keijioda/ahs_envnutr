@@ -3,10 +3,11 @@
 ## Datasets
 
 * File path: M:\Groups\Nutrition\Environmental Nutrition\AHS-2 Environment and Health
-* File Name: baseline-environmental-data-per-subject-20210824.csv
+* File Name: baseline-environmental-data-per-subject-20210912.csv
 
 * Includes n = 88,008 subjects and
-* 187 variables:
+* 190 variables:
+  * `analysisid`
   * Demographics:
     * Age at baseline: `agein`
     * BMI: `bmi`
@@ -24,11 +25,12 @@
     * (replace * with food group name – see below)
 
 * There are 28 food groups:
+
 ```
- [1] "fruit"      "fvjuice"    "veg"        "potato"     "legumes"    "refgrain"   "whlgrain"  
- [8] "vegmeat"    "nutseed"    "sauce"      "vegoil"     "eggs"       "dairy"      "dairysub"  
-[15] "margarine"  "butter"     "beef"       "procmeat"   "poultry"    "pork"       "fish"      
-[22] "water"      "soda"       "cofftea"    "alcbev"     "dessert"    "snackfoods" "cereal"  
+ [1] "cereal"     "snackfoods" "dessert"    "alcbev"     "cofftea"    "soda"       "water"     
+ [8] "fish"       "pork"       "poultry"    "procmeat"   "beef"       "butter"     "margarine" 
+[15] "dairysub"   "dairy"      "eggs"       "vegoil"     "sauce"      "nutseed"    "vegmeat"   
+[22] "whlgrain"   "refgrain"   "legumes"    "potato"     "veg"        "fvjuice"    "fruit"  
 ```
 ## Demographics
 
@@ -46,7 +48,7 @@
                     Black          22175 (25.3) 
   vegstat (%)       Vegan           7351 ( 8.4) 
                     Lacto-ovo      26412 (30.0) 
-                    Semi            4772 ( 5.4) 
                     Pesco           8655 ( 9.8) 
-                    Non-veg        40817 (46.4)
+                    Semi            4772 ( 5.4) 
+                    Non-veg        40817 (46.4) 
 ```

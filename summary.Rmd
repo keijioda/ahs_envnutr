@@ -16,6 +16,10 @@ sapply(pacs, require, character.only = TRUE)
 
 # Read data ---------------------------------------------------------------
 
+is_local <- TRUE
+zipfile  <- "./data/baseline-environmental-data-per-subject-20210912.zip"
+fname    <- "baseline-environmental-data-per-subject-20210912.csv"
+
 source("dataprep.R")
 
 ```
@@ -25,7 +29,7 @@ source("dataprep.R")
 * File Name: `baseline-environmental-data-per-subject-20210912.csv`
 
 * Includes *n* = `r nrow(ev)` subjects and
-* 190 variables including:
+* 190 variables:
   * `analysisid`
   * Demographics:
     * Age at baseline: `agein`
@@ -42,6 +46,7 @@ source("dataprep.R")
     * land use (m²a): `*_lu_m2`
     * water consumption (m³): `*_wc_m3`
     * (replace * with food group name -- see below)
+    
 * There are 28 food groups:
 
 ```{r echo = FALSE}
@@ -79,8 +84,9 @@ ev %>%
 ev %>% 
   select(kcal, gram, srv) %>% 
   psych::describe(quant=c(.25,.75)) %>% 
-  rename(Q1 = Q0.25, Q3 = Q0.75) %>% 
-  select(min, Q1, median, Q3, max, mean, sd, skew)
+  as.data.frame() %>% 
+  select(min, Q0.25, median, Q0.75, max, mean, sd, skew) %>% 
+  mutate_all(round, 2)
 ```
 
 ## Total environmental impact
@@ -90,10 +96,10 @@ ev %>%
 # Distribution of total env impact
 ev %>% 
   select(gw_kg, lu_m2, wc_m3) %>% 
-  # mutate_all(log) %>% 
-  psych::describe(quant=c(.25,.75)) %>% 
-  rename(Q1 = Q0.25, Q3 = Q0.75) %>% 
-  select(min, Q1, median, Q3, max, mean, sd, skew)
+  psych::describe(quant=c(.25,.75)) %>%
+  as.data.frame() %>% 
+  select(min, Q0.25, median, Q0.75, max, mean, sd, skew) %>% 
+  mutate_all(round, 2)
 
 ev %>% 
   select(gw_kg, lu_m2, wc_m3) %>% 
@@ -115,9 +121,10 @@ ev %>%
 all_desc <- function(data, vars, digits = 2){
   data %>% 
     select(all_of(vars)) %>% 
-    psych::describe(quant=c(.25,.75)) %>% 
+    psych::describe(quant=c(.25,.75)) %>%
+    as.data.frame() %>% 
     select(min, Q0.25, median, Q0.75, max, mean, sd, skew) %>%
-    print(digits = digits)
+    mutate_all(round, digits)
 }
 ev %>% all_desc(gwp_vars, digits = 3)
 

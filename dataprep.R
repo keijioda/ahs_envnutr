@@ -5,18 +5,13 @@
 # Read data ---------------------------------------------------------------
 
 # Data file
-# If zip file exists, read the csv file whose name contains "per-subject"
-# Otherwise, find such a csv files and read
-# Need this for rstudio cloud...
-zipfile <- list.files(path = "./data", pattern = "\\.zip$", full.names = TRUE)
+# If local, unzip a zip file and read a csv 
+# If rstudio cloud, read a csv file directly
 
-if (length(zipfile) > 0){
-  fname <- unzip(zipfile, list=TRUE) %>% 
-    filter(grepl("per-subject-", Name)) %>% pull(Name)
+if (is_local){
   ev <- read_csv(unz(zipfile, fname))
 } else {
-  fname <- list.files(path = "./data", pattern = "\\.csv$", full.names = TRUE)
-  fname <- grep("per-subject-", fname, value = TRUE)
+  fname <- paste0("./data/", fname)
   ev <- read_csv(fname)
 }
 
