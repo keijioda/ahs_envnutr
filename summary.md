@@ -44,6 +44,11 @@ AHS-2 Environmental Nutrition
 
 -   ~~Environmental variables of cereal (`cereal_gw_kg`, `cereal_lu_m2`,
     `cereal_wc_m3`) have all zero values. AM has been notified.~~
+-   In the previous data, subjects with extreme kcal (&lt;500
+    or &gt;4500) were already excluded. The new data include those with
+    &lt; 500 kcal/day. Probably because of this, the mean kcal is much
+    lower this time (see below). Double-check with AM. If this is
+    correct, we can apply the restriction on our end.
 
 ### Changes
 
