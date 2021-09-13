@@ -246,8 +246,16 @@ ev %>% ev_by_vegstat_plot(ev_vars_std)
 
 # Mean, SD and median by dietary pattern
 ev %>% ev_desc_stats_by_vegstat(ev_vars_std)
-ev %>% ev_desc_stats_by_vegstat(wc_vars_std)
-  
+
+# Kruskal-Wallis to compare across vegstat
+ev %>% 
+  pivot_longer(all_of(ev_vars_std), names_to = "variable", values_to = "value") %>% 
+  split(.$variable) %>% 
+  map(~ kruskal.test(value ~ vegstat, data = .)) %>% 
+  map_dfr(broom::tidy) %>% 
+  mutate(Variable = ev_vars_std, p.value = Hmisc::format.pval(p.value)) %>% 
+  select(Variable, method, statistic, p.value)
+
 # By food groups... not very informative
 ev %>% ev_by_vegstat_plot(gwp_vars_std)
 ev %>% ev_by_vegstat_plot(lu_vars_std)

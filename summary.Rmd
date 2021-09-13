@@ -194,6 +194,20 @@ ev %>%
   summarize(Median = median(value), Mean = mean(value), SD = sd(value))
 ```
 
+* In all three variables, differences across dietary patterns were highly significant:
+
+```{r echo = FALSE}
+# Kruskal-Wallis to compare across vegstat
+ev_vars_std <- c("gw_kg_std", "lu_m2_std", "wc_m3_std")
+ev %>% 
+  pivot_longer(all_of(ev_vars_std), names_to = "variable", values_to = "value") %>% 
+  split(.$variable) %>% 
+  map(~ kruskal.test(value ~ vegstat, data = .)) %>% 
+  map_dfr(broom::tidy) %>% 
+  mutate(Variable = ev_vars_std, p.value = Hmisc::format.pval(p.value)) %>% 
+  select(Variable, method, statistic, p.value)
+```
+
 ## Mean plot of environmental impact of food groups by dietary pattern
 
 * GWP
