@@ -22,10 +22,11 @@ source("dataprep.R")
 
 ## Dataset
 * File path: `M:\Groups\Nutrition\Environmental Nutrition\AHS-2 Environment and Health`
-* File Name: `baseline-environmental-data-per-subject-20210824.csv`
+* File Name: `baseline-environmental-data-per-subject-20210912.csv`
 
 * Includes *n* = `r nrow(ev)` subjects and
-* 187 variables:
+* 190 variables including:
+  * `analysisid`
   * Demographics:
     * Age at baseline: `agein`
     * BMI: `bmi`
@@ -49,7 +50,7 @@ fg_name
 
 ### Issues
 
-* Environmental variables of cereal (`cereal_gw_kg`, `cereal_lu_m2`, `cereal_wc_m3`) have all zero values. AM has been notified.
+* ~~Environmental variables of cereal (`cereal_gw_kg`, `cereal_lu_m2`, `cereal_wc_m3`) have all zero values. AM has been notified.~~
 
 ### Changes
 
@@ -152,7 +153,7 @@ MeanPlot <- function(data, vars){
 
 ```
 
-* Mean GWP by food group: The consumption of `dairy` contributes to the largest GWP, followed by `beef` and `water`, among 28 food groups.
+* Mean GWP by food group: The consumption of `dairy` contributes to the largest GWP, followed by `whlgrain` and `beef`, among 28 food groups.
 
 * Mean land use by food group: `dairy` followed by `veg`, `legumes` and `whlgrain`.
 
@@ -168,7 +169,7 @@ ev %>% MeanPlot(wc_vars)
 
 * Total energy-adjusted GWP (`gw_kg_std`), land use (`lu_m2_std`), and water consumption (`wc_m3_std`) by dietary pattern are shown in violin plots below. Note that the horizontal axis is on the pseudo-log scale.
 * GWP and land use increase in the order of vegan < lacto-ovo < pesco < semi < non-veg.
-  * The average total GWP of non-vegetarians is twice as high as that of vegans.
+  * The average total GWP of non-vegetarians is almost twice as high as that of vegans.
 * For water consumption, vegans have the highest usage: vegan > pesco > lacto-ovo > semi > non-veg.
 
 ```{r echo = FALSE, fig.height = 5, fig.width = 10, message = FALSE}

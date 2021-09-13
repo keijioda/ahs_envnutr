@@ -6,12 +6,13 @@ AHS-2 Environmental Nutrition
 -   File path:
     `M:\Groups\Nutrition\Environmental Nutrition\AHS-2 Environment and Health`
 
--   File Name: `baseline-environmental-data-per-subject-20210824.csv`
+-   File Name: `baseline-environmental-data-per-subject-20210912.csv`
 
 -   Includes *n* = 88008 subjects and
 
--   187 variables:
+-   190 variables including:
 
+    -   `analysisid`
     -   Demographics:
         -   Age at baseline: `agein`
         -   BMI: `bmi`
@@ -32,17 +33,17 @@ AHS-2 Environmental Nutrition
 
 <!-- -->
 
-    ##  [1] "fruit"      "fvjuice"    "veg"        "potato"     "legumes"   
-    ##  [6] "refgrain"   "whlgrain"   "vegmeat"    "nutseed"    "sauce"     
-    ## [11] "vegoil"     "eggs"       "dairy"      "dairysub"   "margarine" 
-    ## [16] "butter"     "beef"       "procmeat"   "poultry"    "pork"      
-    ## [21] "fish"       "water"      "soda"       "cofftea"    "alcbev"    
-    ## [26] "dessert"    "snackfoods"
+    ##  [1] "cereal"     "snackfoods" "dessert"    "alcbev"     "cofftea"   
+    ##  [6] "soda"       "water"      "fish"       "pork"       "poultry"   
+    ## [11] "procmeat"   "beef"       "butter"     "margarine"  "dairysub"  
+    ## [16] "dairy"      "eggs"       "vegoil"     "sauce"      "nutseed"   
+    ## [21] "vegmeat"    "whlgrain"   "refgrain"   "legumes"    "potato"    
+    ## [26] "veg"        "fvjuice"    "fruit"
 
 ### Issues
 
--   Environmental variables of cereal (`cereal_gw_kg`, `cereal_lu_m2`,
-    `cereal_wc_m3`) have all zero values. AM has been notified.
+-   ~~Environmental variables of cereal (`cereal_gw_kg`, `cereal_lu_m2`,
+    `cereal_wc_m3`) have all zero values. AM has been notified.~~
 
 ### Changes
 
@@ -93,9 +94,9 @@ AHS-2 Environmental Nutrition
 <!-- -->
 
     ##         min      Q1  median      Q3     max    mean      sd skew
-    ## kcal 140.75 1195.34 1591.82 2089.16 4440.27 1697.58  690.42 0.80
-    ## gram  88.99 2147.52 2754.31 3434.03 9762.23 2838.34 1029.28 0.62
-    ## srv    1.48   30.38   39.05   49.21  127.34   40.65   14.58 0.65
+    ## kcal 140.75 1234.74 1640.49 2145.30 4474.44 1746.27  703.91 0.80
+    ## gram 200.09 2160.77 2768.07 3448.46 9782.78 2852.44 1032.57 0.63
+    ## srv    1.48   30.87   39.56   49.80  129.69   41.17   14.68 0.66
 
 ## Total environmental impact
 
@@ -105,9 +106,9 @@ AHS-2 Environmental Nutrition
 <!-- -->
 
     ##        min   Q1 median   Q3   max mean   sd skew
-    ## gw_kg 0.01 0.97   1.38 2.00 10.11 1.61 0.93 1.79
-    ## lu_m2 0.00 1.04   1.43 1.96  7.81 1.58 0.76 1.24
-    ## wc_m3 0.01 0.67   0.99 1.39  7.04 1.12 0.66 1.87
+    ## gw_kg 0.06 1.21   1.69 2.38 11.28 1.93 1.02 1.61
+    ## lu_m2 0.12 1.21   1.65 2.23  8.08 1.81 0.83 1.16
+    ## wc_m3 0.02 0.75   1.08 1.50  7.37 1.21 0.68 1.80
 
 ![](summary_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
 
@@ -118,104 +119,107 @@ AHS-2 Environmental Nutrition
 <!-- -->
 
     ##                  min Q0.25 median Q0.75   max  mean    sd   skew
-    ## fruit_gw_kg        0 0.046  0.084 0.139 1.001 0.110 0.103  3.012
-    ## fvjuice_gw_kg      0 0.020  0.058 0.168 1.717 0.128 0.180  3.343
-    ## veg_gw_kg          0 0.060  0.100 0.154 0.663 0.118 0.082  1.792
-    ## potato_gw_kg       0 0.005  0.010 0.017 0.108 0.014 0.013  2.478
-    ## legumes_gw_kg      0 0.008  0.017 0.030 0.231 0.024 0.025  2.773
-    ## refgrain_gw_kg     0 0.026  0.052 0.083 0.480 0.063 0.058  2.336
-    ## whlgrain_gw_kg     0 0.041  0.078 0.138 0.902 0.113 0.113  2.089
-    ## vegmeat_gw_kg      0 0.000  0.000 0.000 0.111 0.003 0.008  6.601
-    ## nutseed_gw_kg      0 0.012  0.026 0.057 0.542 0.043 0.051  3.477
-    ## sauce_gw_kg        0 0.010  0.022 0.042 0.203 0.030 0.027  1.770
-    ## vegoil_gw_kg       0 0.007  0.017 0.038 0.335 0.029 0.036  3.116
-    ## eggs_gw_kg         0 0.000  0.009 0.037 0.322 0.020 0.032  4.678
-    ## dairy_gw_kg        0 0.029  0.165 0.451 4.714 0.336 0.486  3.303
-    ## dairysub_gw_kg     0 0.000  0.000 0.004 0.158 0.004 0.012  6.110
-    ## margarine_gw_kg    0 0.001  0.011 0.033 0.313 0.024 0.035  3.195
-    ## butter_gw_kg       0 0.000  0.000 0.017 0.702 0.028 0.071  4.906
-    ## beef_gw_kg         0 0.000  0.000 0.133 2.773 0.133 0.308  3.787
-    ## procmeat_gw_kg     0 0.000  0.000 0.000 0.442 0.009 0.036  6.585
-    ## poultry_gw_kg      0 0.000  0.000 0.076 1.323 0.066 0.123  3.380
-    ## pork_gw_kg         0 0.000  0.000 0.000 0.093 0.001 0.005 13.088
-    ## fish_gw_kg         0 0.000  0.000 0.068 1.016 0.047 0.101  4.330
-    ## water_gw_kg        0 0.072  0.129 0.187 0.280 0.133 0.075  0.060
-    ## soda_gw_kg         0 0.000  0.001 0.011 0.384 0.014 0.034  5.030
-    ## cofftea_gw_kg      0 0.000  0.001 0.027 1.873 0.075 0.192  4.115
-    ## alcbev_gw_kg       0 0.000  0.000 0.000 4.000 0.020 0.189 15.322
-    ## dessert_gw_kg      0 0.003  0.010 0.021 0.347 0.019 0.031  4.481
+    ## cereal_gw_kg       0 0.000  0.008 0.022 0.528 0.017 0.027  3.941
     ## snackfoods_gw_kg   0 0.000  0.001 0.011 0.246 0.010 0.023  4.923
+    ## dessert_gw_kg      0 0.005  0.026 0.049 0.811 0.045 0.070  4.449
+    ## alcbev_gw_kg       0 0.000  0.000 0.000 4.000 0.020 0.189 15.322
+    ## cofftea_gw_kg      0 0.000  0.001 0.027 1.873 0.075 0.192  4.115
+    ## soda_gw_kg         0 0.000  0.001 0.011 0.384 0.014 0.034  5.030
+    ## water_gw_kg        0 0.072  0.129 0.187 0.280 0.133 0.075  0.060
+    ## fish_gw_kg         0 0.000  0.014 0.076 1.070 0.058 0.113  4.002
+    ## pork_gw_kg         0 0.000  0.000 0.000 0.093 0.001 0.005 13.088
+    ## poultry_gw_kg      0 0.000  0.000 0.076 1.323 0.066 0.123  3.380
+    ## procmeat_gw_kg     0 0.000  0.000 0.000 0.442 0.009 0.036  6.585
+    ## beef_gw_kg         0 0.000  0.000 0.133 2.773 0.133 0.308  3.787
+    ## butter_gw_kg       0 0.000  0.000 0.017 0.702 0.028 0.071  4.906
+    ## margarine_gw_kg    0 0.001  0.011 0.033 0.313 0.024 0.035  3.195
+    ## dairysub_gw_kg     0 0.000  0.000 0.004 0.417 0.007 0.027  9.158
+    ## dairy_gw_kg        0 0.070  0.262 0.592 5.089 0.434 0.546  2.928
+    ## eggs_gw_kg         0 0.000  0.009 0.037 0.322 0.020 0.032  4.678
+    ## vegoil_gw_kg       0 0.007  0.018 0.039 0.335 0.030 0.036  3.093
+    ## sauce_gw_kg        0 0.015  0.032 0.060 0.794 0.047 0.060  5.570
+    ## nutseed_gw_kg      0 0.012  0.026 0.057 0.542 0.043 0.051  3.477
+    ## vegmeat_gw_kg      0 0.008  0.047 0.097 0.998 0.072 0.095  3.521
+    ## whlgrain_gw_kg     0 0.053  0.102 0.173 1.207 0.146 0.149  2.140
+    ## refgrain_gw_kg     0 0.032  0.065 0.112 0.857 0.089 0.093  2.905
+    ## legumes_gw_kg      0 0.010  0.022 0.047 0.345 0.035 0.040  2.869
+    ## potato_gw_kg       0 0.005  0.011 0.018 0.116 0.015 0.014  2.510
+    ## veg_gw_kg          0 0.060  0.100 0.155 0.664 0.118 0.083  1.786
+    ## fvjuice_gw_kg      0 0.020  0.058 0.168 1.717 0.128 0.180  3.343
+    ## fruit_gw_kg        0 0.046  0.084 0.139 2.229 0.110 0.106  3.801
 
 -   Land use
 
 <!-- -->
 
     ##                  min Q0.25 median Q0.75   max  mean    sd   skew
-    ## fruit_lu_m2        0 0.042  0.076 0.127 0.842 0.099 0.091  2.768
-    ## fvjuice_lu_m2      0 0.014  0.050 0.146 1.457 0.104 0.143  3.415
-    ## veg_lu_m2          0 0.106  0.174 0.281 1.257 0.215 0.157  1.858
-    ## potato_lu_m2       0 0.006  0.011 0.019 0.114 0.015 0.014  2.358
-    ## legumes_lu_m2      0 0.057  0.114 0.211 1.584 0.164 0.171  2.747
-    ## refgrain_lu_m2     0 0.050  0.089 0.153 0.754 0.116 0.099  1.944
-    ## whlgrain_lu_m2     0 0.046  0.093 0.195 0.847 0.131 0.120  1.749
-    ## vegmeat_lu_m2      0 0.000  0.000 0.000 0.118 0.003 0.009  6.601
-    ## nutseed_lu_m2      0 0.022  0.050 0.112 1.152 0.086 0.109  3.724
-    ## sauce_lu_m2        0 0.009  0.019 0.038 0.187 0.027 0.025  1.781
-    ## vegoil_lu_m2       0 0.015  0.039 0.091 0.833 0.069 0.089  3.183
-    ## eggs_lu_m2         0 0.000  0.006 0.027 0.239 0.015 0.024  4.678
-    ## dairy_lu_m2        0 0.020  0.114 0.306 2.597 0.220 0.298  2.810
-    ## dairysub_lu_m2     0 0.000  0.000 0.001 0.085 0.002 0.006  6.754
-    ## margarine_lu_m2    0 0.000  0.003 0.008 0.078 0.006 0.009  3.195
-    ## butter_lu_m2       0 0.000  0.000 0.012 0.483 0.019 0.049  4.906
-    ## beef_lu_m2         0 0.000  0.000 0.119 2.484 0.119 0.275  3.789
-    ## procmeat_lu_m2     0 0.000  0.000 0.000 0.393 0.009 0.033  6.478
-    ## poultry_lu_m2      0 0.000  0.000 0.058 1.010 0.050 0.094  3.381
-    ## pork_lu_m2         0 0.000  0.000 0.000 0.131 0.001 0.007 13.088
-    ## fish_lu_m2         0 0.000  0.000 0.006 0.067 0.004 0.007  3.886
-    ## water_lu_m2        0 0.003  0.005 0.007 0.011 0.005 0.003  0.060
-    ## soda_lu_m2         0 0.000  0.001 0.012 0.398 0.014 0.035  5.030
-    ## cofftea_lu_m2      0 0.000  0.001 0.018 1.192 0.048 0.121  4.118
-    ## alcbev_lu_m2       0 0.000  0.000 0.000 0.800 0.004 0.038 15.322
-    ## dessert_lu_m2      0 0.004  0.012 0.026 0.441 0.024 0.039  4.623
+    ## cereal_lu_m2       0 0.000  0.014 0.042 1.063 0.033 0.053  4.007
     ## snackfoods_lu_m2   0 0.000  0.001 0.009 0.181 0.008 0.017  4.856
+    ## dessert_lu_m2      0 0.007  0.023 0.045 0.680 0.040 0.061  4.236
+    ## alcbev_lu_m2       0 0.000  0.000 0.000 0.800 0.004 0.038 15.322
+    ## cofftea_lu_m2      0 0.000  0.001 0.018 1.192 0.048 0.121  4.118
+    ## soda_lu_m2         0 0.000  0.001 0.012 0.398 0.014 0.035  5.030
+    ## water_lu_m2        0 0.003  0.005 0.007 0.011 0.005 0.003  0.060
+    ## fish_lu_m2         0 0.000  0.002 0.011 0.135 0.008 0.014  3.779
+    ## pork_lu_m2         0 0.000  0.000 0.000 0.131 0.001 0.007 13.088
+    ## poultry_lu_m2      0 0.000  0.000 0.058 1.010 0.050 0.094  3.381
+    ## procmeat_lu_m2     0 0.000  0.000 0.000 0.393 0.009 0.033  6.478
+    ## beef_lu_m2         0 0.000  0.000 0.119 2.484 0.119 0.275  3.789
+    ## butter_lu_m2       0 0.000  0.000 0.012 0.483 0.019 0.049  4.906
+    ## margarine_lu_m2    0 0.000  0.003 0.008 0.078 0.006 0.009  3.195
+    ## dairysub_lu_m2     0 0.000  0.000 0.001 0.232 0.004 0.015  9.514
+    ## dairy_lu_m2        0 0.043  0.170 0.387 2.871 0.276 0.334  2.564
+    ## eggs_lu_m2         0 0.000  0.006 0.027 0.239 0.015 0.024  4.678
+    ## vegoil_lu_m2       0 0.016  0.041 0.093 0.833 0.070 0.089  3.158
+    ## sauce_lu_m2        0 0.011  0.022 0.042 0.203 0.030 0.027  1.754
+    ## nutseed_lu_m2      0 0.022  0.050 0.112 1.152 0.086 0.109  3.724
+    ## vegmeat_lu_m2      0 0.005  0.022 0.047 0.491 0.035 0.047  3.559
+    ## whlgrain_lu_m2     0 0.058  0.117 0.228 1.112 0.164 0.152  1.826
+    ## refgrain_lu_m2     0 0.057  0.106 0.187 1.020 0.141 0.127  2.204
+    ## legumes_lu_m2      0 0.062  0.127 0.241 1.660 0.184 0.189  2.569
+    ## potato_lu_m2       0 0.007  0.012 0.020 0.124 0.016 0.015  2.424
+    ## veg_lu_m2          0 0.107  0.176 0.284 1.262 0.217 0.158  1.850
+    ## fvjuice_lu_m2      0 0.014  0.050 0.146 1.457 0.104 0.143  3.415
+    ## fruit_lu_m2        0 0.042  0.076 0.127 1.636 0.099 0.093  3.228
 
 -   Water consumption
 
 <!-- -->
 
     ##                  min Q0.25 median Q0.75   max  mean    sd   skew
-    ## fruit_wc_m3        0 0.079  0.157 0.275 2.002 0.215 0.214  2.923
-    ## fvjuice_wc_m3      0 0.047  0.138 0.418 4.122 0.306 0.433  3.307
-    ## veg_wc_m3          0 0.129  0.218 0.352 1.684 0.267 0.199  1.976
-    ## potato_wc_m3       0 0.005  0.010 0.020 0.105 0.015 0.013  1.878
-    ## legumes_wc_m3      0 0.005  0.010 0.018 0.153 0.015 0.016  2.916
-    ## refgrain_wc_m3     0 0.003  0.015 0.024 0.167 0.018 0.020  2.914
-    ## whlgrain_wc_m3     0 0.021  0.045 0.089 0.476 0.064 0.065  2.013
-    ## vegmeat_wc_m3      0 0.000  0.000 0.000 0.001 0.000 0.000  6.601
-    ## nutseed_wc_m3      0 0.023  0.051 0.110 1.063 0.083 0.101  3.593
-    ## sauce_wc_m3        0 0.010  0.018 0.030 0.178 0.026 0.026  2.048
-    ## vegoil_wc_m3       0 0.000  0.001 0.003 0.031 0.002 0.003  3.313
-    ## eggs_wc_m3         0 0.000  0.001 0.003 0.027 0.002 0.003  4.678
-    ## dairy_wc_m3        0 0.000  0.003 0.008 0.310 0.009 0.022  6.826
-    ## dairysub_wc_m3     0 0.000  0.000 0.000 0.057 0.001 0.004  8.998
-    ## margarine_wc_m3    0 0.001  0.009 0.026 0.250 0.019 0.028  3.195
-    ## butter_wc_m3       0 0.000  0.000 0.000 0.012 0.000 0.001  4.906
-    ## beef_wc_m3         0 0.000  0.000 0.002 0.033 0.002 0.004  3.789
-    ## procmeat_wc_m3     0 0.000  0.000 0.000 0.008 0.000 0.001  7.625
-    ## poultry_wc_m3      0 0.000  0.000 0.000 0.008 0.000 0.001  3.286
-    ## pork_wc_m3         0 0.000  0.000 0.000 0.006 0.000 0.000 13.088
-    ## fish_wc_m3         0 0.000  0.000 0.008 0.134 0.005 0.013  4.633
-    ## water_wc_m3        0 0.002  0.003 0.004 0.006 0.003 0.002  0.060
-    ## soda_wc_m3         0 0.000  0.005 0.038 1.288 0.047 0.114  5.030
-    ## cofftea_wc_m3      0 0.000  0.000 0.004 0.061 0.004 0.007  3.475
-    ## alcbev_wc_m3       0 0.000  0.000 0.000 0.413 0.002 0.019 15.322
-    ## dessert_wc_m3      0 0.001  0.005 0.010 0.160 0.009 0.015  4.379
+    ## cereal_wc_m3       0 0.000  0.003 0.010 0.323 0.008 0.013  4.415
     ## snackfoods_wc_m3   0 0.000  0.002 0.004 0.066 0.004 0.006  4.141
+    ## dessert_wc_m3      0 0.002  0.009 0.018 0.289 0.016 0.025  4.409
+    ## alcbev_wc_m3       0 0.000  0.000 0.000 0.413 0.002 0.019 15.322
+    ## cofftea_wc_m3      0 0.000  0.000 0.004 0.061 0.004 0.007  3.475
+    ## soda_wc_m3         0 0.000  0.005 0.038 1.288 0.047 0.114  5.030
+    ## water_wc_m3        0 0.002  0.003 0.004 0.006 0.003 0.002  0.060
+    ## fish_wc_m3         0 0.000  0.001 0.011 0.140 0.007 0.015  4.093
+    ## pork_wc_m3         0 0.000  0.000 0.000 0.006 0.000 0.000 13.088
+    ## poultry_wc_m3      0 0.000  0.000 0.000 0.008 0.000 0.001  3.286
+    ## procmeat_wc_m3     0 0.000  0.000 0.000 0.008 0.000 0.001  7.625
+    ## beef_wc_m3         0 0.000  0.000 0.002 0.033 0.002 0.004  3.789
+    ## butter_wc_m3       0 0.000  0.000 0.000 0.012 0.000 0.001  4.906
+    ## margarine_wc_m3    0 0.001  0.009 0.026 0.250 0.019 0.028  3.195
+    ## dairysub_wc_m3     0 0.000  0.000 0.000 0.072 0.001 0.005  8.181
+    ## dairy_wc_m3        0 0.003  0.009 0.021 0.405 0.020 0.034  5.017
+    ## eggs_wc_m3         0 0.000  0.001 0.003 0.027 0.002 0.003  4.678
+    ## vegoil_wc_m3       0 0.000  0.001 0.003 0.031 0.002 0.003  3.312
+    ## sauce_wc_m3        0 0.012  0.023 0.044 0.603 0.038 0.049  4.865
+    ## nutseed_wc_m3      0 0.023  0.051 0.110 1.063 0.083 0.101  3.593
+    ## vegmeat_wc_m3      0 0.001  0.017 0.038 0.431 0.028 0.039  3.840
+    ## whlgrain_wc_m3     0 0.028  0.057 0.106 0.632 0.082 0.082  2.022
+    ## refgrain_wc_m3     0 0.005  0.018 0.032 0.310 0.027 0.035  3.576
+    ## legumes_wc_m3      0 0.005  0.010 0.019 0.154 0.015 0.016  2.894
+    ## potato_wc_m3       0 0.006  0.011 0.021 0.108 0.015 0.014  1.918
+    ## veg_wc_m3          0 0.130  0.219 0.353 1.685 0.268 0.200  1.971
+    ## fvjuice_wc_m3      0 0.047  0.138 0.418 4.122 0.306 0.433  3.307
+    ## fruit_wc_m3        0 0.079  0.157 0.275 4.605 0.215 0.220  3.582
 
 ## Mean plots of environmental impact by food group
 
 -   Mean GWP by food group: The consumption of `dairy` contributes to
-    the largest GWP, followed by `beef` and `water`, among 28 food
+    the largest GWP, followed by `whlgrain` and `beef`, among 28 food
     groups.
 
 -   Mean land use by food group: `dairy` followed by `veg`, `legumes`
@@ -234,8 +238,8 @@ AHS-2 Environmental Nutrition
     pseudo-log scale.
 -   GWP and land use increase in the order of vegan &lt; lacto-ovo &lt;
     pesco &lt; semi &lt; non-veg.
-    -   The average total GWP of non-vegetarians is twice as high as
-        that of vegans.
+    -   The average total GWP of non-vegetarians is almost twice as high
+        as that of vegans.
 -   For water consumption, vegans have the highest usage: vegan &gt;
     pesco &gt; lacto-ovo &gt; semi &gt; non-veg.
 
@@ -245,21 +249,21 @@ AHS-2 Environmental Nutrition
     ## # Groups:   variable [3]
     ##    variable  vegstat   Median  Mean    SD
     ##    <fct>     <fct>      <dbl> <dbl> <dbl>
-    ##  1 gw_kg_std Vegan       1.06  1.07 0.224
-    ##  2 gw_kg_std Lacto-ovo   1.27  1.38 0.500
-    ##  3 gw_kg_std Pesco       1.35  1.46 0.525
-    ##  4 gw_kg_std Semi        1.45  1.57 0.597
-    ##  5 gw_kg_std Non-veg     1.98  2.14 0.824
-    ##  6 lu_m2_std Vegan       1.42  1.43 0.309
-    ##  7 lu_m2_std Lacto-ovo   1.49  1.52 0.364
-    ##  8 lu_m2_std Pesco       1.51  1.54 0.385
-    ##  9 lu_m2_std Semi        1.55  1.58 0.411
-    ## 10 lu_m2_std Non-veg     1.85  1.92 0.561
-    ## 11 wc_m3_std Vegan       1.26  1.36 0.537
-    ## 12 wc_m3_std Lacto-ovo   1.16  1.25 0.502
-    ## 13 wc_m3_std Pesco       1.21  1.30 0.549
-    ## 14 wc_m3_std Semi        1.12  1.21 0.551
-    ## 15 wc_m3_std Non-veg     1.07  1.16 0.524
+    ##  1 gw_kg_std Vegan       1.28  1.29 0.251
+    ##  2 gw_kg_std Lacto-ovo   1.58  1.69 0.526
+    ##  3 gw_kg_std Pesco       1.66  1.76 0.544
+    ##  4 gw_kg_std Semi        1.76  1.87 0.611
+    ##  5 gw_kg_std Non-veg     2.29  2.44 0.824
+    ##  6 lu_m2_std Vegan       1.58  1.58 0.300
+    ##  7 lu_m2_std Lacto-ovo   1.70  1.73 0.360
+    ##  8 lu_m2_std Pesco       1.71  1.73 0.373
+    ##  9 lu_m2_std Semi        1.76  1.78 0.406
+    ## 10 lu_m2_std Non-veg     2.05  2.13 0.553
+    ## 11 wc_m3_std Vegan       1.34  1.44 0.527
+    ## 12 wc_m3_std Lacto-ovo   1.24  1.32 0.486
+    ## 13 wc_m3_std Pesco       1.28  1.36 0.529
+    ## 14 wc_m3_std Semi        1.19  1.28 0.530
+    ## 15 wc_m3_std Non-veg     1.14  1.22 0.506
 
 -   In all three variables, differences across dietary patterns were
     highly significant:
@@ -269,9 +273,9 @@ AHS-2 Environmental Nutrition
     ## # A tibble: 3 x 4
     ##   Variable  method                       statistic p.value   
     ##   <chr>     <chr>                            <dbl> <chr>     
-    ## 1 gw_kg_std Kruskal-Wallis rank sum test    30939. < 2.22e-16
-    ## 2 lu_m2_std Kruskal-Wallis rank sum test    14256. < 2.22e-16
-    ## 3 wc_m3_std Kruskal-Wallis rank sum test     1710. < 2.22e-16
+    ## 1 gw_kg_std Kruskal-Wallis rank sum test    30910. < 2.22e-16
+    ## 2 lu_m2_std Kruskal-Wallis rank sum test    15770. < 2.22e-16
+    ## 3 wc_m3_std Kruskal-Wallis rank sum test     2206. < 2.22e-16
 
 ## Mean plot of environmental impact of food groups by dietary pattern
 

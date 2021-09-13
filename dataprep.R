@@ -12,11 +12,11 @@ zipfile <- list.files(path = "./data", pattern = "\\.zip$", full.names = TRUE)
 
 if (length(zipfile) > 0){
   fname <- unzip(zipfile, list=TRUE) %>% 
-    filter(grepl("per-subject", Name)) %>% pull(Name)
+    filter(grepl("per-subject-", Name)) %>% pull(Name)
   ev <- read_csv(unz(zipfile, fname))
 } else {
   fname <- list.files(path = "./data", pattern = "\\.csv$", full.names = TRUE) %>% 
-    filter(grepl("per-subject", Name)) %>% pull(Name)
+    filter(grepl("per-subject-", Name)) %>% pull(Name)
   ev <- read_csv(fname)
 }
 
@@ -59,9 +59,6 @@ total_vars <- c("kcal", "gram", "srv", "gw_kg", "lu_m2", "wc_m3")
 # 28 Food groups
 fg_name <- grep("_gram", names(ev), value = TRUE) %>% 
   gsub("_gram", "", .)
-
-# For now, exlude cereal
-fg_name <- fg_name[-grep("cereal", fg_name)]
 
 # Create lists of variables
 kcal_vars <- paste0(fg_name, "_kcal")
