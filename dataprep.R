@@ -15,8 +15,8 @@ if (length(zipfile) > 0){
     filter(grepl("per-subject-", Name)) %>% pull(Name)
   ev <- read_csv(unz(zipfile, fname))
 } else {
-  fname <- list.files(path = "./data", pattern = "\\.csv$", full.names = TRUE) %>% 
-    filter(grepl("per-subject-", Name)) %>% pull(Name)
+  fname <- list.files(path = "./data", pattern = "\\.csv$", full.names = TRUE)
+  fname <- grep("per-subject-", fname, value = TRUE)
   ev <- read_csv(fname)
 }
 
