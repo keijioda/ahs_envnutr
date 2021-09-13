@@ -261,16 +261,28 @@ AHS-2 Environmental Nutrition
     ## 14 wc_m3_std Semi        1.12  1.21 0.551
     ## 15 wc_m3_std Non-veg     1.07  1.16 0.524
 
+-   In all three variables, differences across dietary patterns were
+    highly significant:
+
+<!-- -->
+
+    ## # A tibble: 3 x 4
+    ##   Variable  method                       statistic p.value   
+    ##   <chr>     <chr>                            <dbl> <chr>     
+    ## 1 gw_kg_std Kruskal-Wallis rank sum test    30939. < 2.22e-16
+    ## 2 lu_m2_std Kruskal-Wallis rank sum test    14256. < 2.22e-16
+    ## 3 wc_m3_std Kruskal-Wallis rank sum test     1710. < 2.22e-16
+
 ## Mean plot of environmental impact of food groups by dietary pattern
 
 -   GWP
 
-![](summary_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
+![](summary_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->
 
 -   Land use
 
-![](summary_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->
+![](summary_files/figure-gfm/unnamed-chunk-13-1.png)<!-- -->
 
 -   Water consumption: Some of food groups have very small values.
 
-![](summary_files/figure-gfm/unnamed-chunk-13-1.png)<!-- -->
+![](summary_files/figure-gfm/unnamed-chunk-14-1.png)<!-- -->
