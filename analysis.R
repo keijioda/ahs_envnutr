@@ -1,14 +1,18 @@
 
 # AHS-2 Environmental Nutrition and Health
 
-# Wiki page
-browseURL("http://sph.wiki/keiji/projects:envnutr:start")
+# Github 
+browseURL("https://github.com/keijioda/ahs_envnutr")
 
 # Required packages
 pacs <- c("tidyverse", "readxl", "tableone", "GGally", "egg", "DescTools")
 sapply(pacs, require, character.only = TRUE)
 
 # Read data ---------------------------------------------------------------
+
+is_local <- TRUE
+zipfile  <- "./data/baseline-environmental-data-per-subject-20210912.zip"
+fname    <- "baseline-environmental-data-per-subject-20210912.csv"
 
 source("dataprep.R")
 
@@ -38,8 +42,9 @@ ev %>%
 ev %>% 
   select(kcal, gram, srv) %>% 
   psych::describe(quant=c(.25,.75)) %>% 
-  rename(Q1 = Q0.25, Q3 = Q0.75) %>% 
-  select(min, Q1, median, Q3, max, mean, sd, skew)
+  as.data.frame() %>% 
+  select(min, Q0.25, median, Q0.75, max, mean, sd, skew) %>% 
+  mutate_all(round, 2)
 
 # Histogram of total intake in kcal, gram, servings per day
 # pdf("./output/histogram total intake.pdf", width = 9, height = 3)
@@ -70,10 +75,10 @@ ev %>%
 # Distribution of total env impact
 ev %>% 
   select(gw_kg, lu_m2, wc_m3) %>% 
-  # mutate_all(log) %>% 
-  psych::describe(quant=c(.25,.75)) %>% 
-  rename(Q1 = Q0.25, Q3 = Q0.75) %>% 
-  select(min, Q1, median, Q3, max, mean, sd, skew)
+  psych::describe(quant=c(.25,.75)) %>%
+  as.data.frame() %>% 
+  select(min, Q0.25, median, Q0.75, max, mean, sd, skew) %>% 
+  mutate_all(round, 2)
 
 # Histogram
 # pdf("./output/histogram total env impact.pdf", width = 9, height = 3)
@@ -104,17 +109,18 @@ fg_name
 all_desc <- function(data, vars, digits = 2){
   data %>% 
     select(all_of(vars)) %>% 
-    psych::describe(quant=c(.25,.75, .9, .95, .99, .995, .999)) %>% 
-    select(min, Q0.25, median, Q0.75:Q0.999, max, mean, sd, skew) %>%
-    print(digits = digits)
+    psych::describe(quant=c(.25,.75)) %>%
+    as.data.frame() %>% 
+    select(min, Q0.25, median, Q0.75, max, mean, sd, skew) %>%
+    mutate_all(round, digits)
 }
 
 ev %>% all_desc(kcal_vars, digits = 1)
 ev %>% all_desc(gram_vars, digits = 1)
-ev %>% ll_desc(srv_vars, digits = 1)
-ev %>% all_desc(gwp_vars)
-ev %>% all_desc(lu_vars)
-ev %>% all_desc(wc_vars)
+ev %>% all_desc(srv_vars)
+ev %>% all_desc(gwp_vars, digits = 3)
+ev %>% all_desc(lu_vars, digits = 3)
+ev %>% all_desc(wc_vars, digits = 3)
 
 # Histograms
 all_histogram <- function(data, vars, ncol = 6, log = FALSE){
@@ -143,7 +149,7 @@ ev %>% all_histogram(wc_vars)
 compScatter <- function(fg, y, x = "_gram"){
   x_fg <- sym(paste0(fg, x))
   y_fg <- sym(paste0(fg, y))
-  ev2 %>% 
+  ev %>% 
     ggplot(aes(x = !!x_fg, y = !!y_fg)) + 
     geom_point(alpha = 0.2) + 
     geom_smooth(method = "lm", se = TRUE)
@@ -158,9 +164,9 @@ ggarrange(plots = gwp_plots, ncol = 4)
 # Mean plots of environmental variables by food groups
 MeanPlot <- function(data, vars){
   data %>% 
-    select(vars) %>% 
+    select(all_of(vars)) %>% 
     summarize_all(mean) %>% 
-    pivot_longer(vars, names_to = "Variable", values_to = "Mean") %>% 
+    pivot_longer(all_of(vars), names_to = "Variable", values_to = "Mean") %>% 
     ggplot(aes(x = reorder(Variable, Mean), y = Mean)) + 
     geom_bar(stat = "identity") +
     coord_flip() +

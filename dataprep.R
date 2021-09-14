@@ -5,18 +5,13 @@
 # Read data ---------------------------------------------------------------
 
 # Data file
-# If zip file exists, read the csv file whose name contains "per-subject"
-# Otherwise, find such a csv files and read
-# Need this for rstudio cloud...
-zipfile <- list.files(path = "./data", pattern = "\\.zip$", full.names = TRUE)
+# If local, unzip a zip file and read a csv 
+# If rstudio cloud, read a csv file directly
 
-if (length(zipfile) > 0){
-  fname <- unzip(zipfile, list=TRUE) %>% 
-    filter(grepl("per-subject-", Name)) %>% pull(Name)
+if (is_local){
   ev <- read_csv(unz(zipfile, fname))
 } else {
-  fname <- list.files(path = "./data", pattern = "\\.csv$", full.names = TRUE)
-  fname <- grep("per-subject-", fname, value = TRUE)
+  fname <- paste0("./data/", fname)
   ev <- read_csv(fname)
 }
 
@@ -71,7 +66,7 @@ wc_vars   <- paste0(fg_name, "_wc_m3")
 # Winsorize food group variables at 99.9 percentitle
 # Recalculate total kcal, gram, srv, gwp, lu, and wc
 ev <- ev %>% 
-  mutate(across(fruit_kcal:cereal_srv, Winsorize, probs = c(0, 0.999))) %>% 
+  mutate(across(cereal_kcal:fruit_srv, Winsorize, probs = c(0, 0.999))) %>% 
   mutate(kcal  = rowSums(across(all_of(kcal_vars))),
          gram  = rowSums(across(all_of(gram_vars))),
          srv   = rowSums(across(all_of(srv_vars))),

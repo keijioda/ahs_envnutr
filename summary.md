@@ -10,7 +10,7 @@ AHS-2 Environmental Nutrition
 
 -   Includes *n* = 88008 subjects and
 
--   190 variables including:
+-   190 variables:
 
     -   `analysisid`
     -   Demographics:
@@ -44,6 +44,11 @@ AHS-2 Environmental Nutrition
 
 -   ~~Environmental variables of cereal (`cereal_gw_kg`, `cereal_lu_m2`,
     `cereal_wc_m3`) have all zero values. AM has been notified.~~
+-   ~~In the previous data, subjects with extreme kcal (&lt;500
+    or &gt;4500) were already excluded. The new data include those with
+    &lt; 500 kcal/day. Probably because of this, the mean kcal is much
+    lower this time (see below). Double-check with AM. If this is
+    correct, we can apply the restriction on our end.~~
 
 ### Changes
 
@@ -86,17 +91,18 @@ AHS-2 Environmental Nutrition
 ## Total food intake
 
 -   Distributions of total intake in kcal, gram and servings per day
-    -   It appears that those with kcal &lt;500 or &gt;4500 are already
-        excluded.
+    -   In the original data, those with kcal &lt;500 or &gt;4500 were
+        already excluded. The total intake shown below was re-calculated
+        by summing up all winsorized food group intakes.
     -   The max gram intake became more reasonable after winsorizing
         data.
 
 <!-- -->
 
-    ##         min      Q1  median      Q3     max    mean      sd skew
-    ## kcal 140.75 1234.74 1640.49 2145.30 4474.44 1746.27  703.91 0.80
-    ## gram 200.09 2160.77 2768.07 3448.46 9782.78 2852.44 1032.57 0.63
-    ## srv    1.48   30.87   39.56   49.80  129.69   41.17   14.68 0.66
+    ##         min   Q0.25  median   Q0.75     max    mean      sd skew
+    ## kcal 140.75 1234.70 1640.30 2145.19 4474.44 1746.07  703.61 0.80
+    ## gram 200.09 2160.76 2768.07 3448.33 9782.78 2851.89 1031.10 0.62
+    ## srv    1.48   30.87   39.56   49.80  129.16   41.17   14.66 0.65
 
 ## Total environmental impact
 
@@ -105,10 +111,10 @@ AHS-2 Environmental Nutrition
 
 <!-- -->
 
-    ##        min   Q1 median   Q3   max mean   sd skew
-    ## gw_kg 0.06 1.21   1.69 2.38 11.28 1.93 1.02 1.61
-    ## lu_m2 0.12 1.21   1.65 2.23  8.08 1.81 0.83 1.16
-    ## wc_m3 0.02 0.75   1.08 1.50  7.37 1.21 0.68 1.80
+    ##        min Q0.25 median Q0.75   max mean   sd skew
+    ## gw_kg 0.06  1.21   1.69  2.38 11.28 1.93 1.02 1.61
+    ## lu_m2 0.12  1.21   1.65  2.23  8.08 1.81 0.83 1.16
+    ## wc_m3 0.02  0.75   1.08  1.50  7.07 1.21 0.68 1.77
 
 ![](summary_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
 
@@ -119,7 +125,7 @@ AHS-2 Environmental Nutrition
 <!-- -->
 
     ##                  min Q0.25 median Q0.75   max  mean    sd   skew
-    ## cereal_gw_kg       0 0.000  0.008 0.022 0.528 0.017 0.027  3.941
+    ## cereal_gw_kg       0 0.000  0.008 0.022 0.254 0.017 0.026  3.267
     ## snackfoods_gw_kg   0 0.000  0.001 0.011 0.246 0.010 0.023  4.923
     ## dessert_gw_kg      0 0.005  0.026 0.049 0.811 0.045 0.070  4.449
     ## alcbev_gw_kg       0 0.000  0.000 0.000 4.000 0.020 0.189 15.322
@@ -146,14 +152,14 @@ AHS-2 Environmental Nutrition
     ## potato_gw_kg       0 0.005  0.011 0.018 0.116 0.015 0.014  2.510
     ## veg_gw_kg          0 0.060  0.100 0.155 0.664 0.118 0.083  1.786
     ## fvjuice_gw_kg      0 0.020  0.058 0.168 1.717 0.128 0.180  3.343
-    ## fruit_gw_kg        0 0.046  0.084 0.139 2.229 0.110 0.106  3.801
+    ## fruit_gw_kg        0 0.046  0.084 0.139 1.001 0.110 0.103  3.012
 
 -   Land use
 
 <!-- -->
 
     ##                  min Q0.25 median Q0.75   max  mean    sd   skew
-    ## cereal_lu_m2       0 0.000  0.014 0.042 1.063 0.033 0.053  4.007
+    ## cereal_lu_m2       0 0.000  0.014 0.042 0.494 0.033 0.052  3.252
     ## snackfoods_lu_m2   0 0.000  0.001 0.009 0.181 0.008 0.017  4.856
     ## dessert_lu_m2      0 0.007  0.023 0.045 0.680 0.040 0.061  4.236
     ## alcbev_lu_m2       0 0.000  0.000 0.000 0.800 0.004 0.038 15.322
@@ -180,14 +186,14 @@ AHS-2 Environmental Nutrition
     ## potato_lu_m2       0 0.007  0.012 0.020 0.124 0.016 0.015  2.424
     ## veg_lu_m2          0 0.107  0.176 0.284 1.262 0.217 0.158  1.850
     ## fvjuice_lu_m2      0 0.014  0.050 0.146 1.457 0.104 0.143  3.415
-    ## fruit_lu_m2        0 0.042  0.076 0.127 1.636 0.099 0.093  3.228
+    ## fruit_lu_m2        0 0.042  0.076 0.127 0.842 0.099 0.091  2.768
 
 -   Water consumption
 
 <!-- -->
 
     ##                  min Q0.25 median Q0.75   max  mean    sd   skew
-    ## cereal_wc_m3       0 0.000  0.003 0.010 0.323 0.008 0.013  4.415
+    ## cereal_wc_m3       0 0.000  0.003 0.010 0.110 0.008 0.012  3.213
     ## snackfoods_wc_m3   0 0.000  0.002 0.004 0.066 0.004 0.006  4.141
     ## dessert_wc_m3      0 0.002  0.009 0.018 0.289 0.016 0.025  4.409
     ## alcbev_wc_m3       0 0.000  0.000 0.000 0.413 0.002 0.019 15.322
@@ -214,7 +220,7 @@ AHS-2 Environmental Nutrition
     ## potato_wc_m3       0 0.006  0.011 0.021 0.108 0.015 0.014  1.918
     ## veg_wc_m3          0 0.130  0.219 0.353 1.685 0.268 0.200  1.971
     ## fvjuice_wc_m3      0 0.047  0.138 0.418 4.122 0.306 0.433  3.307
-    ## fruit_wc_m3        0 0.079  0.157 0.275 4.605 0.215 0.220  3.582
+    ## fruit_wc_m3        0 0.079  0.157 0.275 2.002 0.215 0.214  2.923
 
 ## Mean plots of environmental impact by food group
 
@@ -249,7 +255,7 @@ AHS-2 Environmental Nutrition
     ## # Groups:   variable [3]
     ##    variable  vegstat   Median  Mean    SD
     ##    <fct>     <fct>      <dbl> <dbl> <dbl>
-    ##  1 gw_kg_std Vegan       1.28  1.29 0.251
+    ##  1 gw_kg_std Vegan       1.28  1.29 0.250
     ##  2 gw_kg_std Lacto-ovo   1.58  1.69 0.526
     ##  3 gw_kg_std Pesco       1.66  1.76 0.544
     ##  4 gw_kg_std Semi        1.76  1.87 0.611
@@ -259,11 +265,11 @@ AHS-2 Environmental Nutrition
     ##  8 lu_m2_std Pesco       1.71  1.73 0.373
     ##  9 lu_m2_std Semi        1.76  1.78 0.406
     ## 10 lu_m2_std Non-veg     2.05  2.13 0.553
-    ## 11 wc_m3_std Vegan       1.34  1.44 0.527
+    ## 11 wc_m3_std Vegan       1.34  1.44 0.526
     ## 12 wc_m3_std Lacto-ovo   1.24  1.32 0.486
-    ## 13 wc_m3_std Pesco       1.28  1.36 0.529
+    ## 13 wc_m3_std Pesco       1.28  1.36 0.528
     ## 14 wc_m3_std Semi        1.19  1.28 0.530
-    ## 15 wc_m3_std Non-veg     1.14  1.22 0.506
+    ## 15 wc_m3_std Non-veg     1.14  1.22 0.505
 
 -   In all three variables, differences across dietary patterns were
     highly significant:
@@ -273,9 +279,9 @@ AHS-2 Environmental Nutrition
     ## # A tibble: 3 x 4
     ##   Variable  method                       statistic p.value   
     ##   <chr>     <chr>                            <dbl> <chr>     
-    ## 1 gw_kg_std Kruskal-Wallis rank sum test    30910. < 2.22e-16
-    ## 2 lu_m2_std Kruskal-Wallis rank sum test    15770. < 2.22e-16
-    ## 3 wc_m3_std Kruskal-Wallis rank sum test     2206. < 2.22e-16
+    ## 1 gw_kg_std Kruskal-Wallis rank sum test    30914. < 2.22e-16
+    ## 2 lu_m2_std Kruskal-Wallis rank sum test    15765. < 2.22e-16
+    ## 3 wc_m3_std Kruskal-Wallis rank sum test     2208. < 2.22e-16
 
 ## Mean plot of environmental impact of food groups by dietary pattern
 

@@ -16,16 +16,20 @@ sapply(pacs, require, character.only = TRUE)
 
 # Read data ---------------------------------------------------------------
 
+is_local <- TRUE
+zipfile  <- "./data/baseline-environmental-data-per-subject-20210912.zip"
+fname    <- "baseline-environmental-data-per-subject-20210912.csv"
+
 source("dataprep.R")
 
 ```
 
 ## Dataset
 * File path: `M:\Groups\Nutrition\Environmental Nutrition\AHS-2 Environment and Health`
-* File Name: `baseline-environmental-data-per-subject-20210912.csv`
+* File Name: ``r fname``
 
 * Includes *n* = `r nrow(ev)` subjects and
-* 190 variables including:
+* 190 variables:
   * `analysisid`
   * Demographics:
     * Age at baseline: `agein`
@@ -42,6 +46,7 @@ source("dataprep.R")
     * land use (m²a): `*_lu_m2`
     * water consumption (m³): `*_wc_m3`
     * (replace * with food group name -- see below)
+    
 * There are 28 food groups:
 
 ```{r echo = FALSE}
@@ -51,6 +56,7 @@ fg_name
 ### Issues
 
 * ~~Environmental variables of cereal (`cereal_gw_kg`, `cereal_lu_m2`, `cereal_wc_m3`) have all zero values. AM has been notified.~~
+* ~~In the previous data, subjects with extreme kcal (<500 or >4500) were already excluded. The new data include those with < 500 kcal/day. Probably because of this, the mean kcal is much lower this time (see below). Double-check with AM. If this is correct, we can apply the restriction on our end.~~
 
 ### Changes
 
@@ -71,7 +77,7 @@ ev %>%
 
 ## Total food intake
 * Distributions of total intake in kcal, gram and servings per day
-  * It appears that those with kcal <500 or >4500 are already excluded.
+  * In the original data, those with kcal <500 or >4500 were already excluded. The total intake shown below was re-calculated by summing up all winsorized food group intakes.
   * The max gram intake became more reasonable after winsorizing data.
 
 ```{r echo = FALSE}
@@ -79,8 +85,9 @@ ev %>%
 ev %>% 
   select(kcal, gram, srv) %>% 
   psych::describe(quant=c(.25,.75)) %>% 
-  rename(Q1 = Q0.25, Q3 = Q0.75) %>% 
-  select(min, Q1, median, Q3, max, mean, sd, skew)
+  as.data.frame() %>% 
+  select(min, Q0.25, median, Q0.75, max, mean, sd, skew) %>% 
+  mutate_all(round, 2)
 ```
 
 ## Total environmental impact
@@ -90,10 +97,10 @@ ev %>%
 # Distribution of total env impact
 ev %>% 
   select(gw_kg, lu_m2, wc_m3) %>% 
-  # mutate_all(log) %>% 
-  psych::describe(quant=c(.25,.75)) %>% 
-  rename(Q1 = Q0.25, Q3 = Q0.75) %>% 
-  select(min, Q1, median, Q3, max, mean, sd, skew)
+  psych::describe(quant=c(.25,.75)) %>%
+  as.data.frame() %>% 
+  select(min, Q0.25, median, Q0.75, max, mean, sd, skew) %>% 
+  mutate_all(round, 2)
 
 ev %>% 
   select(gw_kg, lu_m2, wc_m3) %>% 
@@ -115,9 +122,10 @@ ev %>%
 all_desc <- function(data, vars, digits = 2){
   data %>% 
     select(all_of(vars)) %>% 
-    psych::describe(quant=c(.25,.75)) %>% 
+    psych::describe(quant=c(.25,.75)) %>%
+    as.data.frame() %>% 
     select(min, Q0.25, median, Q0.75, max, mean, sd, skew) %>%
-    print(digits = digits)
+    mutate_all(round, digits)
 }
 ev %>% all_desc(gwp_vars, digits = 3)
 
