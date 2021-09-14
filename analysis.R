@@ -1,8 +1,8 @@
 
 # AHS-2 Environmental Nutrition and Health
 
-# Wiki page
-browseURL("http://sph.wiki/keiji/projects:envnutr:start")
+# Github 
+browseURL("https://github.com/keijioda/ahs_envnutr")
 
 # Required packages
 pacs <- c("tidyverse", "readxl", "tableone", "GGally", "egg", "DescTools")
@@ -164,9 +164,9 @@ ggarrange(plots = gwp_plots, ncol = 4)
 # Mean plots of environmental variables by food groups
 MeanPlot <- function(data, vars){
   data %>% 
-    select(vars) %>% 
+    select(all_of(vars)) %>% 
     summarize_all(mean) %>% 
-    pivot_longer(vars, names_to = "Variable", values_to = "Mean") %>% 
+    pivot_longer(all_of(vars), names_to = "Variable", values_to = "Mean") %>% 
     ggplot(aes(x = reorder(Variable, Mean), y = Mean)) + 
     geom_bar(stat = "identity") +
     coord_flip() +

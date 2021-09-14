@@ -66,7 +66,7 @@ wc_vars   <- paste0(fg_name, "_wc_m3")
 # Winsorize food group variables at 99.9 percentitle
 # Recalculate total kcal, gram, srv, gwp, lu, and wc
 ev <- ev %>% 
-  mutate(across(fruit_kcal:cereal_srv, Winsorize, probs = c(0, 0.999))) %>% 
+  mutate(across(cereal_kcal:fruit_srv, Winsorize, probs = c(0, 0.999))) %>% 
   mutate(kcal  = rowSums(across(all_of(kcal_vars))),
          gram  = rowSums(across(all_of(gram_vars))),
          srv   = rowSums(across(all_of(srv_vars))),
