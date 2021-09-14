@@ -181,9 +181,10 @@ ev %>% MeanPlot(wc_vars)
 * For water consumption, vegans have the highest usage: vegan > pesco > lacto-ovo > semi > non-veg.
 
 ```{r echo = FALSE, fig.height = 5, fig.width = 10, message = FALSE}
+ev_vars_std <- c("gw_kg_std", "lu_m2_std", "wc_m3_std")
 ev %>% 
-  pivot_longer(gw_kg_std:wc_m3_std, names_to = "variable", values_to = "value") %>% 
-  mutate(variable = factor(variable, levels = c("gw_kg_std", "lu_m2_std", "wc_m3_std"))) %>% 
+  pivot_longer(ev_vars_std, names_to = "variable", values_to = "value") %>% 
+  mutate(variable = factor(variable, levels = ev_vars_std)) %>% 
   filter(!is.na(vegstat)) %>% 
   ggplot(aes(x = vegstat, y = value, fill = vegstat)) +
   geom_violin() +
@@ -196,8 +197,8 @@ ev %>%
   theme(legend.position = "none")
 
 ev %>% 
-  pivot_longer(gw_kg_std:wc_m3_std, names_to = "variable", values_to = "value") %>% 
-  mutate(variable = factor(variable, levels = c("gw_kg_std", "lu_m2_std", "wc_m3_std"))) %>% 
+  pivot_longer(ev_vars_std, names_to = "variable", values_to = "value") %>% 
+  mutate(variable = factor(variable, levels = ev_vars_std)) %>% 
   filter(!is.na(vegstat)) %>% 
   group_by(variable, vegstat) %>% 
   summarize(Median = median(value), Mean = mean(value), SD = sd(value))
@@ -207,7 +208,6 @@ ev %>%
 
 ```{r echo = FALSE}
 # Kruskal-Wallis to compare across vegstat
-ev_vars_std <- c("gw_kg_std", "lu_m2_std", "wc_m3_std")
 ev[ev_vars_std] %>% 
   lapply(\(x) kruskal.test(x ~ vegstat, data = ev)) %>% 
   map_dfr(broom::tidy) %>% 

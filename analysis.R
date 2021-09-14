@@ -255,8 +255,7 @@ ev %>% ev_desc_stats_by_vegstat(ev_vars_std)
 
 # Kruskal-Wallis to compare across vegstat
 ev[ev_vars_std] %>% 
-  lapply(\(x) kruskal.test(x ~ vegstat, data = ev)) %>% 
-  map_dfr(broom::tidy) %>% 
+  map_dfr(\(x) broom::tidy(kruskal.test(x ~ vegstat, data = ev))) %>% 
   mutate(Variable = ev_vars_std, p.value = Hmisc::format.pval(p.value)) %>% 
   select(Variable, method, statistic, p.value)
 
