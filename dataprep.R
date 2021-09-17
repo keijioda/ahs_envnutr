@@ -38,7 +38,7 @@ demo_vars <- c("agein", "bmi", "edu3cat", "female", "black", "vegstat")
 
 # Define dietary pattern --------------------------------------------------
 
-# Need to change the default order of vegstat...
+# Need to change the default order of vegstat
 dp_lab <- c("Vegan", "Lacto-ovo", "Semi", "Pesco", "Non-veg")
 dp_lev <- c("Vegan", "Lacto-ovo", "Pesco", "Semi", "Non-veg")
 ahs <- read_csv("./data/ahs_vegstat.csv")

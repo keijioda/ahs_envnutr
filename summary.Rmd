@@ -72,7 +72,8 @@ fg_name
 # Demographics table, unstratified
 ev %>% 
   CreateTableOne(demo_vars, data = .) %>% 
-  print(showAllLevels = TRUE)
+  print(showAllLevels = TRUE) %>% 
+  kableone()
 ```
 
 ## Total food intake
@@ -87,7 +88,8 @@ ev %>%
   psych::describe(quant=c(.25,.75)) %>% 
   as.data.frame() %>% 
   select(min, Q0.25, median, Q0.75, max, mean, sd, skew) %>% 
-  mutate_all(round, 2)
+  mutate_all(round, 2) %>% 
+  knitr::kable()
 ```
 
 ## Total environmental impact
@@ -100,7 +102,8 @@ ev %>%
   psych::describe(quant=c(.25,.75)) %>%
   as.data.frame() %>% 
   select(min, Q0.25, median, Q0.75, max, mean, sd, skew) %>% 
-  mutate_all(round, 2)
+  mutate_all(round, 2) %>% 
+  knitr::kable()
 
 ev %>% 
   select(gw_kg, lu_m2, wc_m3) %>% 
@@ -127,20 +130,20 @@ all_desc <- function(data, vars, digits = 2){
     select(min, Q0.25, median, Q0.75, max, mean, sd, skew) %>%
     mutate_all(round, digits)
 }
-ev %>% all_desc(gwp_vars, digits = 3)
+ev %>% all_desc(gwp_vars, digits = 3) %>% knitr::kable()
 
 ```
 
 * Land use
 
 ```{r echo = FALSE}
-ev %>% all_desc(lu_vars, digits = 3)
+ev %>% all_desc(lu_vars, digits = 3) %>% knitr::kable()
 ```
 
 * Water consumption
 
 ```{r echo = FALSE}
-ev %>% all_desc(wc_vars, digits = 3)
+ev %>% all_desc(wc_vars, digits = 3) %>% knitr::kable()
 ```
 
 ## Mean plots of environmental impact by food group
@@ -201,7 +204,9 @@ ev %>%
   mutate(variable = factor(variable, levels = ev_vars_std)) %>% 
   filter(!is.na(vegstat)) %>% 
   group_by(variable, vegstat) %>% 
-  summarize(Median = median(value), Mean = mean(value), SD = sd(value))
+  summarize(Median = median(value), Mean = mean(value), SD = sd(value)) %>% 
+  mutate_if(is.numeric, round, 2) %>% 
+  knitr::kable()
 ```
 
 * In all three variables, differences across dietary patterns were highly significant:
@@ -211,7 +216,8 @@ ev %>%
 ev[ev_vars_std] %>% 
   map_dfr(\(x) broom::tidy(kruskal.test(x ~ vegstat, data = ev))) %>% 
   mutate(Variable = ev_vars_std, p.value = Hmisc::format.pval(p.value)) %>% 
-  select(Variable, method, statistic, p.value)
+  select(Variable, method, statistic, p.value) %>% 
+  knitr::kable()
 ```
 
 ## Mean plot of environmental impact of food groups by dietary pattern
