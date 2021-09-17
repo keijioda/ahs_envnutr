@@ -8,7 +8,7 @@
 # If local, unzip a zip file and read a csv 
 # If rstudio cloud, read a csv file directly
 
-if (is_local){
+if (file.exists(zipfile)){
   ev <- read_csv(unz(zipfile, fname))
 } else {
   fname <- paste0("./data/", fname)
@@ -38,6 +38,7 @@ demo_vars <- c("agein", "bmi", "edu3cat", "female", "black", "vegstat")
 
 # Define dietary pattern --------------------------------------------------
 
+# Need to change the default order of vegstat...
 dp_lab <- c("Vegan", "Lacto-ovo", "Semi", "Pesco", "Non-veg")
 dp_lev <- c("Vegan", "Lacto-ovo", "Pesco", "Semi", "Non-veg")
 ahs <- read_csv("./data/ahs_vegstat.csv")

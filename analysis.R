@@ -10,7 +10,6 @@ sapply(pacs, require, character.only = TRUE)
 
 # Read data ---------------------------------------------------------------
 
-is_local <- TRUE
 zipfile  <- "./data/baseline-environmental-data-per-subject-20210912.zip"
 fname    <- "baseline-environmental-data-per-subject-20210912.csv"
 
