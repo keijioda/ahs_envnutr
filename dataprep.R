@@ -86,7 +86,7 @@ kcal_standardize <- function(var, kcal, value = 2000, log = TRUE){
     warning("There are negative values in variable.")
   if(log) df$y[df$y > 0 & !is.na(df$y)] <- log(df$y[df$y > 0 & !is.na(df$y)])
   mod <- lm(y ~ kcal, data=df[df$y != 0, ])
-  pred_y <- predict(mod, data.frame(kcal = 2000))
+  pred_y <- predict(mod, data.frame(kcal = value))
   if(log){
     ea <- exp(resid(mod) + pred_y)
     df$ea_y[!is.na(df$y) & df$y != 0] <- ea

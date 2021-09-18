@@ -278,3 +278,24 @@ mean_plot_by_vegstat <- function(data, vars){
 ev %>% mean_plot_by_vegstat(gwp_vars_std)
 ev %>% mean_plot_by_vegstat(lu_vars_std)
 ev %>% mean_plot_by_vegstat(wc_vars_std)
+
+
+# Correlation heat map ----------------------------------------------------
+
+ev_heatmap <- function(data, vars, gsubstr, addrect){
+  data %>% 
+  select(all_of(vars)) %>% 
+  rename_with(~gsub(gsubstr, "", .x)) %>% 
+  cor(method = "spearman") %>% 
+  corrplot::corrplot(method = "color", order = "hclust", hclust.method = "average", addrect = addrect, tl.col = "black", tl.cex = 0.8)
+}
+
+ev %>% ev_heatmap(gwp_vars_std, "_gw_kg_std", addrect = 3)
+ev %>% ev_heatmap(lu_vars_std, "_lu_m2_std", addrect = 3)
+ev %>% ev_heatmap(wc_vars_std, "_wc_m3_std", addrect = 3)
+
+cormat <- ev %>% select(all_of(wc_vars_std)) %>% 
+  rename_with(~gsub("_wc_m3_std", "", .x)) %>% 
+  cor(method = "spearman")
+cormat[abs(cormat) < .5] <- NA
+cormat %>% print(na.print = "")

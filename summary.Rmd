@@ -55,8 +55,8 @@ fg_name
 
 ### Issues
 
-* ~~Environmental variables of cereal (`cereal_gw_kg`, `cereal_lu_m2`, `cereal_wc_m3`) have all zero values. AM has been notified.~~
-* ~~In the previous data, subjects with extreme kcal (<500 or >4500) were already excluded. The new data include those with < 500 kcal/day. Probably because of this, the mean kcal is much lower this time (see below). Double-check with AM. If this is correct, we can apply the restriction on our end.~~
+* Add an exclsion criterion on kcal after winzorization?
+* Change units of environmental variables
 
 ### Changes
 
@@ -220,44 +220,32 @@ ev[ev_vars_std] %>%
   knitr::kable()
 ```
 
-## Mean plot of environmental impact of food groups by dietary pattern
+## Correlation heatmap of food groups' environmental impact
 
-* GWP
+* Correlation heat maps were generated among 28 food groups in terms of GWP, land use, or water consumption, based on Spearman correlation. The order of food group variables were determined by the average-linkage hierarchical clustering.
 
-```{r echo = FALSE, message = FALSE, fig.width = 10, fig.height = 8}
-# Function to produce mean, SD and median by dietary pattern
-ev_desc_stats_by_vegstat <- function(data, vars, digits = 3){
+* GWP: High correlations were found between poultry and fish (*r* = 0.59), between beef and processed meat (*r* = 0.57), and between beef and poultry (*r* = 0.66). Notice the groupings of positively correlated foods.
+
+```{r echo = FALSE, message = FALSE}
+ev_heatmap <- function(data, vars, gsubstr, addrect){
   data %>% 
-    pivot_longer(all_of(vars), names_to = "variable", values_to = "value") %>% 
-    mutate(variable = factor(variable, levels = vars)) %>% 
-    filter(!is.na(vegstat)) %>% 
-    group_by(variable, vegstat) %>% 
-    summarize(Median = median(value), Mean = mean(value), SD = sd(value)) %>% 
-    mutate_if(is.numeric, round, digits)
-}
-# Mean plots of food groups by dietary pattern
-mean_plot_by_vegstat <- function(data, vars){
-  data %>% 
-    ev_desc_stats_by_vegstat(vars) %>%
-    mutate(vegstat = factor(vegstat, labels = c("V", "LO", "P", "S", "NV"))) %>% 
-    ggplot(aes(x = vegstat, y = Mean, fill = vegstat)) +
-    geom_bar(stat = "identity") +
-    labs(x = "Dietary pattern") +
-    facet_wrap(~variable, scales = "free") +
-    theme(legend.position = "bottom")
+  select(all_of(vars)) %>% 
+  rename_with(~gsub(gsubstr, "", .x)) %>% 
+  cor(method = "spearman") %>% 
+  corrplot::corrplot(method = "color", order = "hclust", hclust.method = "average", addrect = addrect, tl.col = "black", tl.cex = 0.8)
 }
 
-ev %>% mean_plot_by_vegstat(gwp_vars_std)
+ev %>% ev_heatmap(gwp_vars_std, "_gw_kg_std", addrect = 3)
 ```
 
-* Land use
+* Land use: Very similar heat map with GWP above.
 
-```{r echo = FALSE, message = FALSE, fig.width = 10, fig.height = 8}
-ev %>% mean_plot_by_vegstat(lu_vars_std)
+```{r echo = FALSE, message = FALSE}
+ev %>% ev_heatmap(lu_vars_std, "_lu_m2_std", addrect = 3)
 ```
 
-* Water consumption: Some of food groups have very small values.
+* Water consumption: Very similar heat map with GWP above.
 
-```{r echo = FALSE, message = FALSE, fig.width = 10, fig.height = 8}
-ev %>% mean_plot_by_vegstat(wc_vars_std)
+```{r echo = FALSE, message = FALSE}
+ev %>% ev_heatmap(wc_vars_std, "_wc_m3_std", addrect = 3)
 ```

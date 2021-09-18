@@ -42,13 +42,8 @@ AHS-2 Environmental Nutrition
 
 ### Issues
 
--   ~~Environmental variables of cereal (`cereal_gw_kg`, `cereal_lu_m2`,
-    `cereal_wc_m3`) have all zero values. AM has been notified.~~
--   ~~In the previous data, subjects with extreme kcal (&lt;500
-    or &gt;4500) were already excluded. The new data include those with
-    &lt; 500 kcal/day. Probably because of this, the mean kcal is much
-    lower this time (see below). Double-check with AM. If this is
-    correct, we can apply the restriction on our end.~~
+-   Add an exclsion criterion on kcal after winzorization?
+-   Change units of environmental variables
 
 ### Changes
 
@@ -273,16 +268,24 @@ AHS-2 Environmental Nutrition
 | lu\_m2\_std | Kruskal-Wallis rank sum test | 15764.787 | &lt; 2.22e-16 |
 | wc\_m3\_std | Kruskal-Wallis rank sum test |  2208.113 | &lt; 2.22e-16 |
 
-## Mean plot of environmental impact of food groups by dietary pattern
+## Correlation heatmap of food groups’ environmental impact
 
--   GWP
+-   Correlation heat maps were generated among 28 food groups in terms
+    of GWP, land use, or water consumption, based on Spearman
+    correlation. The order of food group variables were determined by
+    the average-linkage hierarchical clustering.
+
+-   GWP: High correlations were found between poultry and fish (*r* =
+    0.59), between beef and processed meat (*r* = 0.57), and between
+    beef and poultry (*r* = 0.66). Notice the groupings of positively
+    correlated foods.
 
 ![](summary_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->
 
--   Land use
+-   Land use: Very similar heat map with GWP above.
 
 ![](summary_files/figure-gfm/unnamed-chunk-13-1.png)<!-- -->
 
--   Water consumption: Some of food groups have very small values.
+-   Water consumption: Very similar heat map with GWP above.
 
 ![](summary_files/figure-gfm/unnamed-chunk-14-1.png)<!-- -->
