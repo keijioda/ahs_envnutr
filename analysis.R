@@ -290,12 +290,56 @@ ev_heatmap <- function(data, vars, gsubstr, addrect){
   corrplot::corrplot(method = "color", order = "hclust", hclust.method = "average", addrect = addrect, tl.col = "black", tl.cex = 0.8)
 }
 
+ev %>% ev_heatmap(gram_vars_std, "_gram_std", addrect = 3)
 ev %>% ev_heatmap(gwp_vars_std, "_gw_kg_std", addrect = 3)
 ev %>% ev_heatmap(lu_vars_std, "_lu_m2_std", addrect = 3)
 ev %>% ev_heatmap(wc_vars_std, "_wc_m3_std", addrect = 3)
 
-cormat <- ev %>% select(all_of(wc_vars_std)) %>% 
+cormat <- ev %>% select(all_of(gram_vars_std)) %>% 
   rename_with(~gsub("_wc_m3_std", "", .x)) %>% 
   cor(method = "spearman")
 cormat[abs(cormat) < .5] <- NA
 cormat %>% print(na.print = "")
+
+
+# Linear models: ev vs food group grams -----------------------------------
+
+# Adjusting for total energy
+dv    <- "gw_kg_std"
+covar <- c("kcal")
+
+# Model setup
+rhs <- paste(c(gram_vars_std, covar), collapse = " + ")
+fm1 <- formula(paste(dv, "~", rhs))
+
+# Change units before lm fit...
+gw_mod1 <- ev %>% 
+  mutate(across(all_of(gram_vars_std), \(x) x / 1000)) %>% 
+  mutate(kcal = kcal / 1000) %>% 
+  lm(fm1, data = .) 
+
+# log transformation?
+gw_mod2 <- update(gw_mod1, log(.) ~ ., data = ev) 
+
+# Compare model fits
+ggResidpanel::resid_compare(list(gw_mod1, gw_mod2), 
+                            plots = c("resid", "qq"),
+                            smoother = TRUE)
+
+gw_mod1_coef <- broom::tidy(gw_mod1, conf.int = TRUE) %>% 
+  slice(-1, -n()) %>% 
+  select(term, estimate, conf.low, conf.high) %>%
+  rename_all(~ gsub("_kg_std", "", .x))  %>% 
+  arrange(-estimate) %>% 
+  mutate(term = factor(term))
+
+print(gw_mod1_coef, n = Inf)
+
+gw_mod1_coef %>% 
+  ggplot(aes(x = forcats::fct_reorder(term, estimate), y = estimate)) +
+  geom_point() +
+  geom_errorbar(aes(ymin = conf.low, ymax = conf.high)) + 
+  coord_flip() +
+  labs(x = "Intake of food groups (per kg)",
+       y = "Beta coefficients for GWP (with 95% CI)")
+

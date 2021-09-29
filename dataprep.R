@@ -99,18 +99,23 @@ kcal_standardize <- function(var, kcal, value = 2000, log = TRUE){
 }
 
 # Create new variables
+gram_vars_std <- paste0(gram_vars, "_std")
+kcal_vars_std <- paste0(kcal_vars, "_std")
+gwp_vars_std <- paste0(gwp_vars, "_std")
 gwp_vars_std <- paste0(gwp_vars, "_std")
 lu_vars_std  <- paste0(lu_vars,  "_std")
 wc_vars_std  <- paste0(wc_vars,  "_std")
 
 # and standardize
+ev[gram_vars_std] <- lapply(ev[gram_vars], kcal_standardize, kcal = ev$kcal)
 ev[gwp_vars_std] <- lapply(ev[gwp_vars], kcal_standardize, kcal = ev$kcal)
 ev[lu_vars_std]  <- lapply(ev[lu_vars],  kcal_standardize, kcal = ev$kcal)
 ev[wc_vars_std]  <- lapply(ev[wc_vars],  kcal_standardize, kcal = ev$kcal)
 
 # Sum up standardized values
 ev <- ev %>% 
-  mutate(gw_kg_std = rowSums(across(all_of(gwp_vars_std))),
+  mutate(gram_std  = rowSums(across(all_of(gram_vars_std))),
+         gw_kg_std = rowSums(across(all_of(gwp_vars_std))),
          lu_m2_std = rowSums(across(all_of(lu_vars_std))),
          wc_m3_std = rowSums(across(all_of(wc_vars_std))))
 
