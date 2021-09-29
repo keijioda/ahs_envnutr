@@ -347,8 +347,5 @@ AHS-2 Environmental Nutrition
 
 <!-- -->
 
-    ## Error in lm.fit(x, y, offset = offset, singular.ok = singular.ok, ...): NA/NaN/Inf in 'y'
-
-    ## Error in lm.fit(x, y, offset = offset, singular.ok = singular.ok, ...): NA/NaN/Inf in 'y'
 
 <img src="summary_files/figure-gfm/unnamed-chunk-16-1.png" width="50%" /><img src="summary_files/figure-gfm/unnamed-chunk-16-2.png" width="50%" /><img src="summary_files/figure-gfm/unnamed-chunk-16-3.png" width="50%" />
