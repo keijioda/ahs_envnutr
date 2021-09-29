@@ -304,32 +304,34 @@ cormat %>% print(na.print = "")
 
 # Linear models: ev vs food group grams -----------------------------------
 
-# Adjusting for total energy
+# Model setup
 dv    <- "gw_kg_std"
 covar <- c("kcal")
-
-# Model setup
 rhs <- paste(c(gram_vars_std, covar), collapse = " + ")
 fm1 <- formula(paste(dv, "~", rhs))
 
 # Change units before lm fit...
 gw_mod1 <- ev %>% 
-  mutate(across(all_of(gram_vars_std), \(x) x / 1000)) %>% 
-  mutate(kcal = kcal / 1000) %>% 
+  mutate(kcal = kcal / 1000,
+         gw_kg_std = gw_kg_std * 1000) %>% 
   lm(fm1, data = .) 
 
 # log transformation?
 gw_mod2 <- update(gw_mod1, log(.) ~ ., data = ev) 
 
 # Compare model fits
-ggResidpanel::resid_compare(list(gw_mod1, gw_mod2), 
-                            plots = c("resid", "qq"),
-                            smoother = TRUE)
+# ggResidpanel::resid_compare(list(gw_mod1, gw_mod2), 
+#                             plots = c("resid", "qq"),
+#                             smoother = TRUE)
+
+par(mfrow = c(1, 2))
+  plot(gw_mod1, which = 1:2)
+par(mfrow = c(1, 1))
 
 gw_mod1_coef <- broom::tidy(gw_mod1, conf.int = TRUE) %>% 
   slice(-1, -n()) %>% 
   select(term, estimate, conf.low, conf.high) %>%
-  rename_all(~ gsub("_kg_std", "", .x))  %>% 
+  mutate(term = gsub("_gram_std", "", term)) %>% 
   arrange(-estimate) %>% 
   mutate(term = factor(term))
 
@@ -340,6 +342,44 @@ gw_mod1_coef %>%
   geom_point() +
   geom_errorbar(aes(ymin = conf.low, ymax = conf.high)) + 
   coord_flip() +
-  labs(x = "Intake of food groups (per kg)",
+  labs(x = "Intake of food groups (gram/day)",
        y = "Beta coefficients for GWP (with 95% CI)")
 
+ggResidpanel::resid_panel(gw_mod1, plots = c("resid", "qq"))
+
+# GAMLSS ------------------------------------------------------------------
+
+library(gamlss)
+
+# Data for gamlss models
+ev_gamlss <- ev %>% 
+  dplyr::select(all_of(dv), all_of(covar), all_of(gram_vars_std)) %>% 
+  mutate(kcal = kcal / 1000,
+         gw_kg_std = gw_kg_std * 1000)
+
+# Normal error
+gw_mod1 <- gamlss(fm1, family = NO, data = na.omit(ev_gamlss)) 
+wp(gw_mod1, xlim.all = 5, ylim.all = 7)
+summary(gw_mod1)
+
+# Generalized Gamma distribution (three parameters)
+gw_mod2 <- gamlss(fm1, family = GG, data = na.omit(ev_gamlss))
+wp(gw_mod2, xlim.all = 5, ylim.all = 7)
+GAIC(gw_mod1, gw_mod2)
+
+# Generalized beta of the second kind (four parameters)
+gw_mod3 <- gamlss(fm1, family = GB2, method = mixed(5, 30), data = na.omit(ev_gamlss))
+wp(gw_mod3, xlim.all = 5, ylim.all = 2)
+GAIC(gw_mod1, gw_mod2, gw_mod3)
+
+summary(gw_mod3)
+coef(gw_mod3)
+
+title(paste("Normal: AIC = ", round(gw_mod1$aic)))
+
+gw_mod3_coef <- broom.mixed::tidy(gw_mod3, conf.int = TRUE) %>% 
+  slice(-1, -n()) %>% 
+  select(term, estimate, conf.low, conf.high) %>%
+  mutate(term = gsub("_gram_std", "", term)) %>% 
+  arrange(-estimate) %>% 
+  mutate(term = factor(term))

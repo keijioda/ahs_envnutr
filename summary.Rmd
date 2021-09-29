@@ -130,20 +130,20 @@ all_desc <- function(data, vars, digits = 2){
     select(min, Q0.25, median, Q0.75, max, mean, sd, skew) %>%
     mutate_all(round, digits)
 }
-ev %>% all_desc(gwp_vars, digits = 3) %>% knitr::kable()
+ev %>% all_desc(gwp_vars, digits = 3)
 
 ```
 
 * Land use
 
 ```{r echo = FALSE}
-ev %>% all_desc(lu_vars, digits = 3) %>% knitr::kable()
+ev %>% all_desc(lu_vars, digits = 3)
 ```
 
 * Water consumption
 
 ```{r echo = FALSE}
-ev %>% all_desc(wc_vars, digits = 3) %>% knitr::kable()
+ev %>% all_desc(wc_vars, digits = 3)
 ```
 
 ## Mean plots of environmental impact by food group
@@ -205,8 +205,7 @@ ev %>%
   filter(!is.na(vegstat)) %>% 
   group_by(variable, vegstat) %>% 
   summarize(Median = median(value), Mean = mean(value), SD = sd(value)) %>% 
-  mutate_if(is.numeric, round, 2) %>% 
-  knitr::kable()
+  mutate_if(is.numeric, round, 2)
 ```
 
 * In all three variables, differences across dietary patterns were highly significant:
@@ -220,11 +219,11 @@ ev[ev_vars_std] %>%
   knitr::kable()
 ```
 
-## Correlation heatmap of food groups' environmental impact
+## Correlation heatmap of food group intake
 
-* Correlation heat maps were generated among 28 food groups in terms of GWP, land use, or water consumption, based on Spearman correlation. The order of food group variables were determined by the average-linkage hierarchical clustering.
+* Correlation heat maps were generated among 28 food groups in terms of gram (standardized to 2000 kcal), based on Spearman correlation. The order of food group variables were determined by the average-linkage hierarchical clustering.
 
-* GWP: High correlations were found between poultry and fish (*r* = 0.59), between beef and processed meat (*r* = 0.57), and between beef and poultry (*r* = 0.66). Notice the groupings of positively correlated foods.
+* Moderately high correlations were found between beef and poultry (*r* = 0.66), between poultry and fish (*r* = 0.60), and between beef and processed meat (*r* = 0.57). Notice the groupings of positively correlated foods (3 groupings were chosen from the cluster analysis).
 
 ```{r echo = FALSE, message = FALSE}
 ev_heatmap <- function(data, vars, gsubstr, addrect){
@@ -235,17 +234,82 @@ ev_heatmap <- function(data, vars, gsubstr, addrect){
   corrplot::corrplot(method = "color", order = "hclust", hclust.method = "average", addrect = addrect, tl.col = "black", tl.cex = 0.8)
 }
 
-ev %>% ev_heatmap(gwp_vars_std, "_gw_kg_std", addrect = 3)
+ev %>% ev_heatmap(gram_vars_std, "_gram_std", addrect = 3)
 ```
 
-* Land use: Very similar heat map with GWP above.
+## Models for env variables on food group intakes
+
+* A linear model was fitted for GWP, regressed on all 28 food group intakes (standardized to 2000 kcal). The unit of GWP was changed to g CO<sub>2</sub>-eq  to make beta coefficients larger. Estimated beta coefficients (and their 95% CI) were plotted from the largest to the smallest.
 
 ```{r echo = FALSE, message = FALSE}
-ev %>% ev_heatmap(lu_vars_std, "_lu_m2_std", addrect = 3)
+# Model setup
+dv    <- "gw_kg_std"
+covar <- c("kcal")
+rhs   <- paste(c(gram_vars_std, covar), collapse = " + ")
+fm1   <- formula(paste(dv, "~", rhs))
+
+# Change units before lm fit...
+gw_mod1 <- ev %>% 
+  mutate(kcal = kcal / 1000,
+         gw_kg_std = gw_kg_std * 1000) %>% 
+  lm(fm1, data = .) 
+
+gw_mod1_coef <- broom::tidy(gw_mod1, conf.int = TRUE) %>% 
+  slice(-1, -n()) %>% 
+  select(term, estimate, conf.low, conf.high) %>%
+  mutate(term = gsub("_gram_std", "", term)) %>% 
+  arrange(-estimate) %>% 
+  mutate(term = factor(term))
+
+gw_mod1_coef %>% 
+  ggplot(aes(x = forcats::fct_reorder(term, estimate), y = estimate)) +
+  geom_point() +
+  geom_errorbar(aes(ymin = conf.low, ymax = conf.high)) + 
+  coord_flip() +
+  labs(x = "Intake of food groups (gram/day)",
+       y = "Beta coefficients for GWP (with 95% CI)")
 ```
 
-* Water consumption: Very similar heat map with GWP above.
 
-```{r echo = FALSE, message = FALSE}
-ev %>% ev_heatmap(wc_vars_std, "_wc_m3_std", addrect = 3)
+```{r echo = FALSE}
+gw_mod1_coef %>% 
+  mutate_if(is.numeric, round, 2) %>% 
+  knitr::kable()
+```
+
+* The model fit was poor, as expected from the distribution of GWP. Model assumptions were clearly violated.
+
+```{r echo = FALSE, message = FALSE, fig.height = 5, fig.width = 10}
+ggResidpanel::resid_panel(gw_mod1, plots = c("resid", "qq"))
+```
+
+* Instead of assuming normal errors, we used:
+  * the generalized gamma (GG) model
+  * the generalized beta of the second kind (GB2) model
+
+* A worm plot ([van Buuren & Fredriks, 2001](https://pubmed.ncbi.nlm.nih.gov/11304741/)) was generated for each model to compare model fits.
+  * Compared to the normal model, the GG model fits better, having a smaller AIC. However, its worm plot still indicates a poor fit.
+  * The model fit further improved in the GB2 model. Its worm plot is more acceptable, compared to the other two models.
+
+```{r echo = FALSE, message = FALSE, warning = FALSE, results = FALSE, error = TRUE, fig.height = 5, fig.width = 5, out.width=c('50%', '50%'), fig.show='hold'}
+library(gamlss)
+
+# Data for gamlss models
+ev_gamlss <- ev %>% 
+  dplyr::select(all_of(dv), all_of(covar), all_of(gram_vars_std)) %>% 
+  mutate(kcal = kcal / 1000,
+         gw_kg_std = gw_kg_std * 1000)
+
+# Normal error
+gw_mod1 <- gamlss(fm1, family = NO, data = na.omit(ev_gamlss)) 
+
+# Generalized Gamma distribution (three parameters)
+gw_mod2 <- gamlss(fm1, family = GG, data = na.omit(ev_gamlss))
+
+# Generalized beta of the second kind (four parameters)
+gw_mod3 <- gamlss(fm1, family = GB2, method = mixed(5, 30), data = na.omit(ev_gamlss))
+
+wp(gw_mod1, xlim.all = 5, ylim.all = 7); title(paste("Normal: AIC = ", round(gw_mod1$aic)))
+wp(gw_mod2, xlim.all = 5, ylim.all = 7); title(paste("GG: AIC = ", round(gw_mod2$aic)))
+wp(gw_mod3, xlim.all = 5, ylim.all = 2); title(paste("GB2: AIC = ", round(gw_mod3$aic)))
 ```
