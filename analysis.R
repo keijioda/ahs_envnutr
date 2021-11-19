@@ -379,38 +379,30 @@ library(gamlss)
 ev_gamlss <- ev %>% 
   dplyr::select(all_of(dv), all_of(covar), all_of(gram_vars_std)) %>% 
   mutate(kcal = kcal / 1000,
-         gw_kg_std = gw_kg_std * 1000)
+         gw_kg_std = gw_kg_std * 1000) %>% 
+  na.omit()
 
 # Normal error
-gw_mod1 <- gamlss(fm1, family = NO, data = na.omit(ev_gamlss)) 
+gw_mod1 <- gamlss(fm1, family = NO, data = ev_gamlss) 
 wp(gw_mod1, xlim.all = 5, ylim.all = 7)
+title(paste("Normal: AIC = ", round(gw_mod1$aic)))
 summary(gw_mod1)
 
 # Generalized Gamma distribution (three parameters)
-gw_mod2 <- gamlss(fm1, family = GG, data = na.omit(ev_gamlss))
+gw_mod2 <- gamlss(fm1, family = GG, data = ev_gamlss)
 wp(gw_mod2, xlim.all = 5, ylim.all = 7)
-GAIC(gw_mod1, gw_mod2)
+title(paste("GG: AIC = ", round(gw_mod2$aic)))
 
 # Generalized beta of the second kind (four parameters)
-gw_mod3 <- gamlss(fm1, family = GB2, method = mixed(5, 30), data = na.omit(ev_gamlss))
+gw_mod3 <- gamlss(fm1, family = GB2, method = mixed(5, 30), data = ev_gamlss)
 wp(gw_mod3, xlim.all = 5, ylim.all = 2)
-GAIC(gw_mod1, gw_mod2, gw_mod3)
+title(paste("GB2: AIC = ", round(gw_mod3$aic)))
 
 # Adding model for variance
 sfm1 <- formula(paste("~", rhs))
-gw_mod4 <- gamlss(fm1, sigma.fo = sfm1, nu.fo = sfm1, family = GB2, method = mixed(5, 100), data = na.omit(ev_gamlss))
+gw_mod4 <- gamlss(fm1, sigma.fo = sfm1, nu.fo = sfm1, family = GB2, method = mixed(5, 100), data = ev_gamlss)
 wp(gw_mod4, xlim.all = 5, ylim.all = 2)
+title(paste("GB2: AIC = ", round(gw_mod4$aic)))
 GAIC(gw_mod4)
+
 summary(gw_mod4)
-
-summary(gw_mod3)
-coef(gw_mod3)
-
-title(paste("Normal: AIC = ", round(gw_mod1$aic)))
-
-gw_mod3_coef <- broom.mixed::tidy(gw_mod3, conf.int = TRUE) %>% 
-  slice(-1, -n()) %>% 
-  select(term, estimate, conf.low, conf.high) %>%
-  mutate(term = gsub("_gram_std", "", term)) %>% 
-  arrange(-estimate) %>% 
-  mutate(term = factor(term))
