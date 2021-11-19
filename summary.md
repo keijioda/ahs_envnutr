@@ -86,7 +86,7 @@ AHS-2 Environmental Nutrition
 ## Total food intake
 
 -   Distributions of total intake in kcal, gram and servings per day
-    -   In the original data, those with kcal &lt;500 or &gt;4500 were
+    -   In the original data, those with kcal \<500 or >4500 were
         already excluded. The total intake shown below was re-calculated
         by summing up all winsorized food group intakes.
     -   The max gram intake became more reasonable after winsorizing
@@ -103,11 +103,11 @@ AHS-2 Environmental Nutrition
 -   Distributions of total GWP, land use and water consumption are
     right-skewed:
 
-|        |  min | Q0.25 | median | Q0.75 |   max | mean |   sd | skew |
-|:-------|-----:|------:|-------:|------:|------:|-----:|-----:|-----:|
-| gw\_kg | 0.06 |  1.21 |   1.69 |  2.38 | 11.28 | 1.93 | 1.02 | 1.61 |
-| lu\_m2 | 0.12 |  1.21 |   1.65 |  2.23 |  8.08 | 1.81 | 0.83 | 1.16 |
-| wc\_m3 | 0.02 |  0.75 |   1.08 |  1.50 |  7.07 | 1.21 | 0.68 | 1.77 |
+|       |  min | Q0.25 | median | Q0.75 |   max | mean |   sd | skew |
+|:------|-----:|------:|-------:|------:|------:|-----:|-----:|-----:|
+| gw_kg | 0.06 |  1.21 |   1.69 |  2.38 | 11.28 | 1.93 | 1.02 | 1.61 |
+| lu_m2 | 0.12 |  1.21 |   1.65 |  2.23 |  8.08 | 1.81 | 0.83 | 1.16 |
+| wc_m3 | 0.02 |  0.75 |   1.08 |  1.50 |  7.07 | 1.21 | 0.68 | 1.77 |
 
 ![](summary_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
 
@@ -235,12 +235,12 @@ AHS-2 Environmental Nutrition
     water consumption (`wc_m3_std`) by dietary pattern are shown in
     violin plots below. Note that the horizontal axis is on the
     pseudo-log scale.
--   GWP and land use increase in the order of vegan &lt; lacto-ovo &lt;
-    pesco &lt; semi &lt; non-veg.
+-   GWP and land use increase in the order of vegan \< lacto-ovo \<
+    pesco \< semi \< non-veg.
     -   The average total GWP of non-vegetarians is almost twice as high
         as that of vegans.
--   For water consumption, vegans have the highest usage: vegan &gt;
-    pesco &gt; lacto-ovo &gt; semi &gt; non-veg.
+-   For water consumption, vegans have the highest usage: vegan >
+    pesco > lacto-ovo > semi > non-veg.
 
 ![](summary_files/figure-gfm/unnamed-chunk-10-1.png)<!-- -->
 
@@ -267,11 +267,11 @@ AHS-2 Environmental Nutrition
 -   In all three variables, differences across dietary patterns were
     highly significant:
 
-| Variable    | method                       | statistic | p.value       |
-|:------------|:-----------------------------|----------:|:--------------|
-| gw\_kg\_std | Kruskal-Wallis rank sum test | 30913.876 | &lt; 2.22e-16 |
-| lu\_m2\_std | Kruskal-Wallis rank sum test | 15764.787 | &lt; 2.22e-16 |
-| wc\_m3\_std | Kruskal-Wallis rank sum test |  2208.113 | &lt; 2.22e-16 |
+| Variable  | method                       | statistic | p.value     |
+|:----------|:-----------------------------|----------:|:------------|
+| gw_kg_std | Kruskal-Wallis rank sum test | 30913.876 | \< 2.22e-16 |
+| lu_m2_std | Kruskal-Wallis rank sum test | 15764.787 | \< 2.22e-16 |
+| wc_m3_std | Kruskal-Wallis rank sum test |  2208.113 | \< 2.22e-16 |
 
 ## Correlation heatmap of food group intake
 
@@ -288,7 +288,9 @@ AHS-2 Environmental Nutrition
 
 ![](summary_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->
 
-## Models for env variables on food group intakes
+## Linear models for env variables on food group intakes
+
+### Models adjusting for the total energy intake
 
 -   A linear model was fitted for GWP, regressed on all 28 food group
     intakes (standardized to 2000 kcal). The unit of GWP was changed to
@@ -329,10 +331,29 @@ AHS-2 Environmental Nutrition
 | cereal     |    -0.52 |    -0.62 |     -0.41 |
 | pork       |   -10.90 |   -12.74 |     -9.06 |
 
+### Models without kcal
+
+-   Estimated beta coefficients were compared between the models with
+    and without the total energy intake. Generally speaking, further
+    adjusting for kcal appears to attenuate the beta estimates slightly.
+
+![](summary_files/figure-gfm/unnamed-chunk-15-1.png)<!-- -->
+
+### Models excluding pork eaters
+
+-   Because of the apparent negative association between GWP and pork
+    intake, the model was refit after removing any pork eaters (n = 2313
+    or 2.6%). Estimated beta coefficients were virtually unchanged after
+    the exclusion.
+
+![](summary_files/figure-gfm/unnamed-chunk-16-1.png)<!-- -->
+
+## GAMLSS models on GWP
+
 -   The model fit was poor, as expected from the distribution of GWP.
     Model assumptions were clearly violated.
 
-![](summary_files/figure-gfm/unnamed-chunk-15-1.png)<!-- -->
+![](summary_files/figure-gfm/unnamed-chunk-17-1.png)<!-- -->
 
 -   Instead of assuming normal errors, we used:
     -   the generalized gamma (GG) model
@@ -347,5 +368,4 @@ AHS-2 Environmental Nutrition
 
 <!-- -->
 
-
-<img src="summary_files/figure-gfm/unnamed-chunk-16-1.png" width="50%" /><img src="summary_files/figure-gfm/unnamed-chunk-16-2.png" width="50%" /><img src="summary_files/figure-gfm/unnamed-chunk-16-3.png" width="50%" />
+<img src="summary_files/figure-gfm/unnamed-chunk-18-1.png" width="50%" /><img src="summary_files/figure-gfm/unnamed-chunk-18-2.png" width="50%" /><img src="summary_files/figure-gfm/unnamed-chunk-18-3.png" width="50%" />

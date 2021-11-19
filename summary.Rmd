@@ -237,7 +237,9 @@ ev_heatmap <- function(data, vars, gsubstr, addrect){
 ev %>% ev_heatmap(gram_vars_std, "_gram_std", addrect = 3)
 ```
 
-## Models for env variables on food group intakes
+## Linear models for env variables on food group intakes
+
+### Models adjusting for the total energy intake
 
 * A linear model was fitted for GWP, regressed on all 28 food group intakes (standardized to 2000 kcal). The unit of GWP was changed to g CO<sub>2</sub>-eq  to make beta coefficients larger. Estimated beta coefficients (and their 95% CI) were plotted from the largest to the smallest.
 
@@ -245,22 +247,33 @@ ev %>% ev_heatmap(gram_vars_std, "_gram_std", addrect = 3)
 # Model setup
 dv    <- "gw_kg_std"
 covar <- c("kcal")
-rhs   <- paste(c(gram_vars_std, covar), collapse = " + ")
-fm1   <- formula(paste(dv, "~", rhs))
+rhs <- paste(c(gram_vars_std, covar), collapse = " + ")
+fm1 <- formula(paste(dv, "~", rhs))
 
 # Change units before lm fit...
-gw_mod1 <- ev %>% 
+ev_lm <- ev %>% 
   mutate(kcal = kcal / 1000,
-         gw_kg_std = gw_kg_std * 1000) %>% 
-  lm(fm1, data = .) 
+         gw_kg_std = gw_kg_std * 1000)
 
-gw_mod1_coef <- broom::tidy(gw_mod1, conf.int = TRUE) %>% 
-  slice(-1, -n()) %>% 
-  select(term, estimate, conf.low, conf.high) %>%
-  mutate(term = gsub("_gram_std", "", term)) %>% 
-  arrange(-estimate) %>% 
-  mutate(term = factor(term))
+# Function to tidy beta estimates
+extract_beta <- function(model){
+  broom::tidy(model, conf.int = TRUE) %>% 
+    slice(-1, -n()) %>% 
+    select(term, estimate, conf.low, conf.high) %>%
+    mutate(term = gsub("_gram_std", "", term)) %>% 
+    arrange(-estimate) %>% 
+    mutate(term = factor(term))
+}
 
+# Initial model
+gw_mod1 <- lm(fm1, data = ev_lm) 
+gw_mod1_coef <- extract_beta(gw_mod1) 
+
+# log transformation? -- not used here
+gw_mod2 <- update(gw_mod1, log(.) ~ ., data = ev_lm) 
+gw_mod2_coef <- extract_beta(gw_mod2) 
+
+# Plot beta estimates
 gw_mod1_coef %>% 
   ggplot(aes(x = forcats::fct_reorder(term, estimate), y = estimate)) +
   geom_point() +
@@ -270,12 +283,56 @@ gw_mod1_coef %>%
        y = "Beta coefficients for GWP (with 95% CI)")
 ```
 
-
 ```{r echo = FALSE}
 gw_mod1_coef %>% 
   mutate_if(is.numeric, round, 2) %>% 
   knitr::kable()
 ```
+
+### Models without kcal
+
+ * Estimated beta coefficients were compared between the models with and without the total energy intake. Generally speaking, further adjusting for kcal appears to attenuate the beta estimates slightly.
+
+```{r echo = FALSE, message = FALSE}
+# Remove kcal from the model
+gw_mod3 <- update(gw_mod1, . ~ . -kcal, data = ev_lm) 
+gw_mod3_coef <- extract_beta(gw_mod3) 
+
+# Compare coefficient estimates
+gw_mod1_coef %>% 
+  mutate(model = "with Kcal") %>% 
+  bind_rows(gw_mod3_coef %>% mutate(model = "without kcal")) %>% 
+  ggplot(aes(x = forcats::fct_reorder(term, estimate), y = estimate, color = model)) +
+  geom_point() +
+  geom_errorbar(aes(ymin = conf.low, ymax = conf.high)) + 
+  coord_flip() +
+  labs(x = "Intake of food groups (gram/day)",
+       y = "Beta coefficients for GWP (with 95% CI)")
+```
+
+### Models excluding pork eaters
+
+ * Because of the apparent negative association between GWP and pork intake, the model was refit after removing any pork eaters (n = 2313 or 2.6%). Estimated beta coefficients were virtually unchanged after the exclusion.
+
+```{r echo = FALSE, message = FALSE}
+# Remove pork from the model
+gw_mod4 <- update(gw_mod1, . ~ . -pork_gram_std, data = ev_lm[ev_lm$pork_gram == 0,]) 
+gw_mod4_coef <- extract_beta(gw_mod4) 
+
+# Compare coefficient estimates
+gw_mod1_coef %>% 
+  mutate(model = "Include pork eaters") %>% 
+  bind_rows(gw_mod4_coef %>% mutate(model = "Exclude pork eaters")) %>% 
+  ggplot(aes(x = forcats::fct_reorder(term, estimate), y = estimate, color = model)) +
+  geom_point() +
+  geom_errorbar(aes(ymin = conf.low, ymax = conf.high)) + 
+  coord_flip() +
+  labs(x = "Intake of food groups (gram/day)",
+       y = "Beta coefficients for GWP (with 95% CI)")
+```
+
+
+## GAMLSS models on GWP
 
 * The model fit was poor, as expected from the distribution of GWP. Model assumptions were clearly violated.
 

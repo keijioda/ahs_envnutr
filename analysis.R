@@ -311,32 +311,44 @@ rhs <- paste(c(gram_vars_std, covar), collapse = " + ")
 fm1 <- formula(paste(dv, "~", rhs))
 
 # Change units before lm fit...
-gw_mod1 <- ev %>% 
+ev_lm <- ev %>% 
   mutate(kcal = kcal / 1000,
-         gw_kg_std = gw_kg_std * 1000) %>% 
-  lm(fm1, data = .) 
+         gw_kg_std = gw_kg_std * 1000)
+
+# Function to tidy beta estimates
+extract_beta <- function(model){
+  broom::tidy(model, conf.int = TRUE) %>% 
+    slice(-1, -n()) %>% 
+    select(term, estimate, conf.low, conf.high) %>%
+    mutate(term = gsub("_gram_std", "", term)) %>% 
+    arrange(-estimate) %>% 
+    mutate(term = factor(term))
+}
+
+# Initial model
+gw_mod1 <- lm(fm1, data = ev_lm) 
+gw_mod1_coef <- extract_beta(gw_mod1) 
 
 # log transformation?
-gw_mod2 <- update(gw_mod1, log(.) ~ ., data = ev) 
+gw_mod2 <- update(gw_mod1, log(.) ~ ., data = ev_lm) 
+gw_mod2_coef <- extract_beta(gw_mod2) 
 
-# Compare model fits
-# ggResidpanel::resid_compare(list(gw_mod1, gw_mod2), 
-#                             plots = c("resid", "qq"),
-#                             smoother = TRUE)
+# Remove kcal from the model
+gw_mod3 <- update(gw_mod1, . ~ . -kcal, data = ev_lm) 
+gw_mod3_coef <- extract_beta(gw_mod3) 
 
+# Remove pork from the model
+gw_mod4 <- update(gw_mod1, . ~ . -pork_gram_std, data = ev_lm[ev_lm$pork_gram == 0,]) 
+gw_mod4_coef <- extract_beta(gw_mod4) 
+
+# Diagnostics
 par(mfrow = c(1, 2))
   plot(gw_mod1, which = 1:2)
 par(mfrow = c(1, 1))
 
-gw_mod1_coef <- broom::tidy(gw_mod1, conf.int = TRUE) %>% 
-  slice(-1, -n()) %>% 
-  select(term, estimate, conf.low, conf.high) %>%
-  mutate(term = gsub("_gram_std", "", term)) %>% 
-  arrange(-estimate) %>% 
-  mutate(term = factor(term))
+ggResidpanel::resid_panel(gw_mod1, plots = c("resid", "qq"))
 
-print(gw_mod1_coef, n = Inf)
-
+# Plot beta estimates
 gw_mod1_coef %>% 
   ggplot(aes(x = forcats::fct_reorder(term, estimate), y = estimate)) +
   geom_point() +
@@ -345,7 +357,16 @@ gw_mod1_coef %>%
   labs(x = "Intake of food groups (gram/day)",
        y = "Beta coefficients for GWP (with 95% CI)")
 
-ggResidpanel::resid_panel(gw_mod1, plots = c("resid", "qq"))
+# Compare coefficient estimates
+gw_mod1_coef %>% 
+  mutate(model = "Include pork eaters") %>% 
+  bind_rows(gw_mod4_coef %>% mutate(model = "Exclude pork eaters")) %>% 
+  ggplot(aes(x = forcats::fct_reorder(term, estimate), y = estimate, color = model)) +
+  geom_point() +
+  geom_errorbar(aes(ymin = conf.low, ymax = conf.high)) + 
+  coord_flip() +
+  labs(x = "Intake of food groups (gram/day)",
+       y = "Beta coefficients for GWP (with 95% CI)")
 
 # GAMLSS ------------------------------------------------------------------
 
