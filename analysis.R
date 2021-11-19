@@ -341,6 +341,9 @@ gw_mod3_coef <- extract_beta(gw_mod3)
 gw_mod4 <- update(gw_mod1, . ~ . -pork_gram_std, data = ev_lm[ev_lm$pork_gram == 0,]) 
 gw_mod4_coef <- extract_beta(gw_mod4) 
 
+# Compare model fits between log(y) and untransformed
+ggResidpanel::resid_compare(list(gw_mod1, gw_mod2), plots = c("resid", "qq"), smoother = TRUE)
+
 # Diagnostics
 par(mfrow = c(1, 2))
   plot(gw_mod1, which = 1:2)
@@ -392,6 +395,13 @@ GAIC(gw_mod1, gw_mod2)
 gw_mod3 <- gamlss(fm1, family = GB2, method = mixed(5, 30), data = na.omit(ev_gamlss))
 wp(gw_mod3, xlim.all = 5, ylim.all = 2)
 GAIC(gw_mod1, gw_mod2, gw_mod3)
+
+# Adding model for variance
+sfm1 <- formula(paste("~", rhs))
+gw_mod4 <- gamlss(fm1, sigma.fo = sfm1, nu.fo = sfm1, family = GB2, method = mixed(5, 100), data = na.omit(ev_gamlss))
+wp(gw_mod4, xlim.all = 5, ylim.all = 2)
+GAIC(gw_mod4)
+summary(gw_mod4)
 
 summary(gw_mod3)
 coef(gw_mod3)
